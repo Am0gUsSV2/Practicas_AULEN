@@ -6,15 +6,14 @@ RE0 = "[ab]*a"
 
 """
 Completa a continuacion las expresiones regulares para los
-ejercicios 1-6:
+ejercicios 1-5:
 """
-RE1 = ""
-RE2 = ""
-RE3 = ""
-RE4 = ""
-RE5 = ""
-RE6 = ""
 
+RE1 = ""
+RE2 = "(-?((\.[0-9]*)|([1-9][0-9]*\.?)|([1-9][0-9]*\.[0-9]*))?)|[0-9]|(0\.?)|(0\.[0-9]*)|(-0\.[0-9]+)"
+RE3 =  ""
+RE4 = "([1-9][0-9]*[\+\-\*\/])*[1-9][0-9]*[\+\-\*\/][1-9][0-9]*"
+RE5 = ""
 """
 Recuerda que puedes usar el fichero test_p0.py para probar tus
 expresiones regulares.
