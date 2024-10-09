@@ -88,10 +88,9 @@ class Transitions():
         if self.state_has_transitions(state):
             dict_state = self.transitions.get(state, False) #Esto deberia devolver el valor de la clave state (que es otro diccionario con claves simbolos y valor estados a donde se puede transicionar)
             if dict_state is False:
-                return False
+                return None
             return dict_state.keys() #Esto deberia devolver las claves (que son los simbolos con los cuales se puede transicionar a otros estados)
-        else:
-            return None
+        return None
 
     def state_has_any_transition_with_symbol(self, state: State, symbol: str):
         """
@@ -112,8 +111,11 @@ class Transitions():
         """
         #------------------------------------------------------
         # TO-DO por el estudiante
-        
         #------------------------------------------------------
+        symbols = self.state_get_symbols(state)
+        if symbols is not None:
+            if symbol in symbols:
+                return True
         return False
 
 
@@ -137,8 +139,12 @@ class Transitions():
         """
         #-------------------------------------------------------
         # TO-DO por el estudiante
-        
         #-------------------------------------------------------
+        if self.state_has_any_transition_with_symbol(start_state, symbol):
+            dict_state = self.transitions.get(start_state, False)
+            dict_state2 = dict_state.get(symbol, False)
+            if end_state in dict_state2:
+                return True
         return False
 
     def goes_to(self, state: State, symbol: str):
@@ -161,6 +167,10 @@ class Transitions():
         # TO-DO por el estudiante
 
         #-------------------------------------------------------
+        if self.state_has_any_transition_with_symbol(state, symbol):
+            dict_state = self.transitions.get(state, False).get(symbol, False)
+            #dict_state2 = dict_state.get(symbol, False)
+            return dict_state
         return None
 
         
@@ -190,9 +200,14 @@ class Transitions():
         
         #----------------------------------------------------------
         # TO-DO por el estudiante
-        
         #----------------------------------------------------------
-
+        
+        if self.state_has_any_transition_with_symbol(start_state, symbol):
+            self.transitions.get(start_state, False).get(symbol, False).append(end_state)
+            return
+        dict_to_add = {symbol, end_state}
+        self.transitions.get(start_state, False).append(dict_to_add)
+        return
             
     def add_transitions(self, transitions: list):
         """
