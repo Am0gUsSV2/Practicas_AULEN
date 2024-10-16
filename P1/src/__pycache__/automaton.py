@@ -99,8 +99,8 @@ class FiniteAutomaton():
         # TO-DO por el estudiante
         # for state in self.current_states...
         
-        self.transitions[state].get(symbol,set())  # self.transitions[state][symbol]
-        new_states = dict()
+        # self.transitions[state].get(symbol,set())  # self.transitions[state][symbol]
+        new_states = set()
         
         for state in self.current_states:
             for symbol in self.transitions[state]:
@@ -128,7 +128,16 @@ class FiniteAutomaton():
         """
         #--------------------------------------------------
         # TO-DO por el estudiante
+        self.current_states = {self.initial_state}
         
+        for leter in string:
+            self.process_symbol(self, leter)
+            
+        for state in self.current_states:
+            if state.isfinal == True:
+                return True
+        
+        return False
         #--------------------------------------------------
 
 
@@ -151,6 +160,18 @@ class FiniteAutomaton():
         """
         #----------------------------------------------
         # TO-DO por el estudiante
+        
+        lambda_transitions = get_lambda_transitions()
+        
+        new_states = set(self.current_states)
+        
+        for state in self.current_states:
+            if state in lambda_transitions:
+                new_states.update(state)
+        
+        self.current_states = new_states
+        
+        return self.current_states
 
         #----------------------------------------------
 
