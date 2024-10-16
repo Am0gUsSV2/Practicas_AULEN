@@ -99,20 +99,18 @@ class FiniteAutomaton():
         # TO-DO por el estudiante
         # for state in self.current_states...
         
-        if self.state_has_any_transitions_with_symbol(self, self.initial_state, str) == False:
-            return None #set() es el conjunto vacio
-        
         self.transitions[state].get(symbol,set())  # self.transitions[state][symbol]
-        alltransitions = self.get_all_transitions(self)
+        new_states = dict()
         
+        for state in self.current_states:
+            for symbol in self.transitions[state]:
+                new_states.update(self.transitions[state][symbol])
         
-        for i in transiciones:
-            if str in i:
-                newStates = dict()
+        if new_states:
+            self.current_states = new_states
+        else:
+            self.current_states = set()# conjunto vacio
             
-        
-        
-        
         #-------------------------------------------------
 
 
