@@ -99,46 +99,49 @@ class FiniteAutomaton():
         # TO-DO por el estudiante
         # for state in self.current_states...
         
-        # self.transitions[state].get(symbol,set())  # self.transitions[state][symbol]
         new_states = set()
-        
+            
+        # Iterar sobre los estados actuales
         for state in self.current_states:
-            for symbol in self.transitions[state]:
-                new_states.update(self.transitions[state][symbol])
-        
+            new_s = self.transitions.goes_to(state, symbol)
+            if new_s:
+                new_states.update(new_s)
+            
+        # Si se encontraron nuevos estados, actualizar los estados actuales
         if new_states:
-            self.current_states = new_states
+            self.current_states = self._complete_lambdas(new_states)
         else:
-            self.current_states = set()# conjunto vacio
+            self.current_states = set()
+
             
         #-------------------------------------------------
 
 
     def accepts(self, string: str):
         """
-            Esta función procesa una cadena y comprueba si debe ser aceptada
-              o no.
+        Esta función procesa una cadena y comprueba si debe ser aceptada
+        o no.
 
-            Args:
-                string: cadena a procesar
+        Args:
+            string: cadena a procesar
 
-            Returns:
-                True si la cadena debe ser aceptada
-                False otherwise
+        Returns:
+            True si la cadena debe ser aceptada
+            False en caso contrario
         """
-        #--------------------------------------------------
-        # TO-DO por el estudiante
-        self.current_states = {self.initial_state}
-        
-        for leter in string:
-            self.process_symbol(self, leter)
+        self.reset()
+        for symbol in string:
+            self.process_symbol(symbol)
             
-        for state in self.current_states:
-            if state.isfinal == True:
-                return True
+            if not self.current_states:
+                print("Cadena no válida: " + string)
+                return False
         
+        # Verificar si alguno de los estados actuales es un estado final
+        for state in self.current_states:
+            if state.is_final:  # Comprueba si es un estado final
+                return True
         return False
-        #--------------------------------------------------
 
 
     def _complete_lambdas(self, raw_current_states: set):
@@ -160,19 +163,21 @@ class FiniteAutomaton():
         """
         #----------------------------------------------
         # TO-DO por el estudiante
+        transciones = self.transitions.get_lambda_transitions()
         
-        lambda_transitions = get_lambda_transitions()
+        new_states = set(raw_current_states)
         
-        new_states = set(self.current_states)
+        queue = deque(raw_current_states)
         
-        for state in self.current_states:
-            if state in lambda_transitions:
-                new_states.update(state)
+        while queue:
+            state = queue.popleft()
+            
+            for next_state in transciones.get(state, set()):
+                if next_state not in new_states:
+                    new_states.add(next_state)
+                    queue.append(next_state)
         
-        self.current_states = new_states
-        
-        return self.current_states
-
+        return new_states
         #----------------------------------------------
 
     # END Funciones relacionadas con el procesamiento de una cadena
