@@ -117,6 +117,8 @@ class Transitions():
             if symbol in symbols:
                 return True
         return False
+        
+        
 
 
     def state_has_transition_to(self, start_state: State, symbol: str, end_state: State):
@@ -141,9 +143,7 @@ class Transitions():
         # TO-DO por el estudiante
         #-------------------------------------------------------
         if self.state_has_any_transition_with_symbol(start_state, symbol):
-            dict_state = self.transitions.get(start_state, False)
-            dict_state2 = dict_state.get(symbol, False)
-            if end_state in dict_state2:
+            if end_state in self.transitions[start_state][symbol]:
                 return True
         return False
 
@@ -168,8 +168,7 @@ class Transitions():
 
         #-------------------------------------------------------
         if self.state_has_any_transition_with_symbol(state, symbol):
-            dict_state = self.transitions.get(state, False).get(symbol, False)
-            #dict_state2 = dict_state.get(symbol, False)
+            dict_state = self.transitions[state].get(symbol, set())
             return dict_state
         return None
 
@@ -202,12 +201,16 @@ class Transitions():
         # TO-DO por el estudiante
         #----------------------------------------------------------
         
-        if self.state_has_any_transition_with_symbol(start_state, symbol):
-            self.transitions.get(start_state, False).get(symbol, False).append(end_state)
-            return
-        dict_to_add = {symbol, end_state}
-        self.transitions.get(start_state, False).append(dict_to_add)
-        return
+        if start_state not in self.transitions:
+            self.transitions[start_state] = {}
+        
+        if self.state_has_any_transition_with_symbol(start_state, symbol) == False:
+            self.transitions[start_state][symbol] = set()
+        
+        self.transitions[start_state][symbol].add(end_state)
+            
+        
+            
             
     def add_transitions(self, transitions: list):
         """
