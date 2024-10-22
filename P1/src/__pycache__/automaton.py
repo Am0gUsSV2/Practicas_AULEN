@@ -9,9 +9,9 @@
         - REParser: Clase que parsea de expresión regular a autómata.
 """
 
-from src.state import State
-from src.transitions import Transitions
-from src.utils import is_deterministic
+from state import State
+from transitions import Transitions
+from utils import is_deterministic
 from collections import deque
 
 class FiniteAutomaton():
@@ -68,7 +68,23 @@ class FiniteAutomaton():
         return self.transitions.goes_to(state, symbol)
         
     def get_all_transitions(self):
-        return self.transitions.get_all_transitions()
+        return self.transitions
+    
+    def get_initial_state(self):
+        return self.initial_state
+    
+    def get_final_state(self):
+        for state in self.states:
+            if state.is_final_state():
+                return state
+    
+    def get_all_states(self):
+        return self.states #devuelve el conjunto de estados del automata
+    
+    def get_all_symbols(self):
+        return self.symbols # Devuelve el conjunto de simbolos del automata
+        
+
 
     # END Funciones relacionadas con las transiciones
 
