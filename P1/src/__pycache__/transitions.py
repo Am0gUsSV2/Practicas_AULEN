@@ -9,7 +9,7 @@
         - REParser: Clase que parsea de expresión regular a autómata.
 """
 
-from src.state import State
+from state import State
 
 class Transitions():
     """
