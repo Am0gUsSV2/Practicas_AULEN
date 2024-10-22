@@ -30,3 +30,9 @@ class State():
 
     def __hash__(self):
         return hash(self.name)
+    
+    def is_final_state(self):
+        return self.is_final
+    
+    def set_final(self, status):
+        self.is_final = status
