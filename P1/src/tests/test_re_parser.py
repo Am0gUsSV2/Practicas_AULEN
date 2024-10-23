@@ -1,8 +1,8 @@
 """Test evaluation of regex parser."""
 import unittest
 
-from src.automaton import FiniteAutomaton
-from src.re_parser import REParser
+from automaton import FiniteAutomaton
+from re_parser import REParser
 
 
 class TestREParser(unittest.TestCase):

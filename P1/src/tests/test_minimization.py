@@ -2,8 +2,8 @@
 import unittest
 from abc import ABC
 
-from src.automaton import FiniteAutomaton
-from src.utils import AutomataFormat, deterministic_automata_isomorphism
+from automaton import FiniteAutomaton
+from utils import AutomataFormat, deterministic_automata_isomorphism
 
 
 class TestMinimize(ABC, unittest.TestCase):

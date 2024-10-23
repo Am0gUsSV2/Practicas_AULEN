@@ -5,7 +5,7 @@ import re
 
 from typing_extensions import Final
 
-import src.automaton as aut
+import automaton as aut
 from collections import deque, defaultdict
 
 
