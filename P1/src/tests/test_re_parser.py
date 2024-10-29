@@ -3,6 +3,7 @@ import unittest
 
 from automaton import FiniteAutomaton
 from re_parser import REParser
+from utils import write_dot
 
 
 class TestREParser(unittest.TestCase):
@@ -10,6 +11,8 @@ class TestREParser(unittest.TestCase):
 
     def _create_evaluator(self, regex):
         automaton = REParser().create_automaton(regex)
+        with open('automata.dot', 'w') as fdot:
+            fdot.write(write_dot(automaton))
         return automaton
 
     def _check_accept(self, evaluator, string, should_accept = True):

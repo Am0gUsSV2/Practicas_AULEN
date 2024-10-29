@@ -16,13 +16,13 @@ class FormatParseError(Exception):
 class AutomataFormat():
     """Custom format to write and read automata."""
 
-    re_comment = re.compile(r"\s*#\.*") # : Final
-    re_empty = re.compile(r"\s*") # : Final
-    re_automaton = re.compile(r"\s*Automaton:\s*") # : Final
-    re_state = re.compile(r"\s*(\w+)(?:\s*(final))?\s*") # : Final
-    re_transition = re.compile(r"\s*(\w+)\s*-(\S)?->\s*(\w+)\s*") # : Final
-    re_initial = re.compile(r"\s*ini\s(\w+)\s*-(\S)?->\s*(\w+)\s*") # : Final
-    re_symbols = re.compile(r"\s*Symbols:\s*(\S*)\s*") # : Final
+    re_comment = re.compile(r"\s*#\.*")  # : Final
+    re_empty = re.compile(r"\s*")  # : Final
+    re_automaton = re.compile(r"\s*Automaton:\s*")  # : Final
+    re_state = re.compile(r"\s*(\w+)(?:\s*(final))?\s*")  # : Final
+    re_transition = re.compile(r"\s*(\w+)\s*-(\S)?->\s*(\w+)\s*")  # : Final
+    re_initial = re.compile(r"\s*ini\s(\w+)\s*-(\S)?->\s*(\w+)\s*")  # : Final
+    re_symbols = re.compile(r"\s*Symbols:\s*(\S*)\s*")  # : Final
 
     @classmethod
     def read(cls, description):
@@ -32,7 +32,7 @@ class AutomataFormat():
 
         initial_state = None
         states = {}
-        transitions = aut.Transitions()  
+        transitions = aut.Transitions()
 
         for line in splitted_lines:
             if cls.re_comment.fullmatch(line) or cls.re_empty.fullmatch(line):
@@ -58,13 +58,14 @@ class AutomataFormat():
                 if match:
                     state_name = match.groups()[0]
                     initial_state = states[state_name]
-                    line = line.replace('ini ','')
+                    line = line.replace('ini ', '')
 
                 match = cls.re_transition.fullmatch(line)
                 if match:
                     state1_name, symbol, state2_name = match.groups()
 
-                    transitions.add_transition(states[state1_name], symbol, states[state2_name])
+                    transitions.add_transition(
+                        states[state1_name], symbol, states[state2_name])
                     continue
 
             elif cls.re_automaton.fullmatch(line):
@@ -101,10 +102,10 @@ class AutomataFormat():
             + "\n"
             + f"\t--> {automaton.initial_state.name}\n"
             + "".join(
-                f"\t{t.initial_state.name} "
-                f"-{t.symbol if t.symbol is not None else ''}->"
-                f" {t.final_state.name}\n"
-                for t in automaton.transitions
+                f"\t{t[0].name} "
+                f"-{t[1] if t[1] is not None else ''}->"
+                f" {t[2].name}\n"
+                for t in automaton.get_all_transitions()
             )
         )
 
@@ -142,7 +143,7 @@ def write_dot(automaton):
         + "".join(
             f"  {t[0].name} -> {t[2].name}"
             f"[label=\"{symbol_repr(t[1])}\"]\n"
-            for t in automaton.get_all_transitions()
+            for t in automaton.get_all_transitions().get_all_transitions()
         )
         + "}\n"
     )

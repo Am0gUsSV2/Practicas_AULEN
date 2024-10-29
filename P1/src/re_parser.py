@@ -9,9 +9,12 @@
         - REParser: Clase que parsea de expresión regular a autómata
 """
 
+
 from automaton import FiniteAutomaton
 from state import State
 from transitions import Transitions
+
+state_counter = 0
 
 def _re_to_rpn(re_string):
     """
@@ -69,10 +72,12 @@ class REParser():
         """
         #---------------------------------------------------------------------
         # TO DO: Implement this method...
-        
+        global state_counter
 
-        initial_state = State("q0")
-        final_state = State("qf", True)
+        initial_state = State("q" + str(state_counter)) # Se crea el estado inicial del nuevo automata
+        state_counter += 1
+        final_state = State("q" + str(state_counter), True) # Se crea el estado final del nuevo automata
+        state_counter += 1
         states = {initial_state, final_state}
         return FiniteAutomaton(initial_state, states, {}, None)
 
@@ -89,8 +94,10 @@ class REParser():
 
         """
         #---------------------------------------------------------------------
-        # TO DO: Implement this method...
-        unique_state = State("q0", True) # Se crea un unico estado el cual es final
+        global state_counter
+
+        unique_state = State("q" + str(state_counter)) # Se crea el estado inicial del nuevo automata
+        state_counter += 1
         transitions = Transitions() # Se crea el objeto Transitions, inicialmente vacio
         transitions.add_transition(unique_state, "", unique_state) #Se aniade la transicion lambda al objeto transitions
         return FiniteAutomaton(unique_state, {unique_state}, {""}, transitions) # Se crea el automata
@@ -111,8 +118,12 @@ class REParser():
         """
         #---------------------------------------------------------------------
         # TO DO: Implement this method...
-        initial_state = State("q0") # Se crea el estado inicial
-        final_state = State("qf", True) # Se crea el estado final
+        global state_counter
+
+        initial_state = State("q" + str(state_counter)) # Se crea el estado inicial del nuevo automata
+        state_counter += 1
+        final_state = State("q" + str(state_counter), True) # Se crea el estado final del nuevo automata
+        state_counter += 1
         transitions = Transitions() # Se crea el objeto Transitions, inicialmente vacio
         transitions.add_transition(initial_state, symbol, final_state) #Se aniade la transicion symbol al objeto transitions
         return FiniteAutomaton(initial_state, {initial_state, final_state}, {symbol}, transitions) # Se crea el automata
@@ -133,8 +144,12 @@ class REParser():
         #---------------------------------------------------------------------
         # TO DO: Implement this method...
         # A*
-        initial_state = State("q0") # Se crea el estado inicial del nuevo automata
-        final_state = State("qf", True) # Se crea el estado final del nuevo automata
+        global state_counter
+
+        initial_state = State("q" + str(state_counter)) # Se crea el estado inicial del nuevo automata
+        state_counter += 1
+        final_state = State("q" + str(state_counter), True) # Se crea el estado final del nuevo automata
+        state_counter += 1
         og_initial_state = automaton.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state = automaton.get_final_state() # Se obtiene el estado final del automata original
         og_transitions = automaton.get_all_transitions() # Se obtienen todas las transiciones del automata original
@@ -142,16 +157,16 @@ class REParser():
         og_states = automaton.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
         #meter simbolo lambda en el conjunto de simbolos si esta no se encuentra en el set
-        if "" not in og_symbols:
-            og_symbols.add("")
+        if None not in og_symbols:
+            og_symbols.add(None)
         #transicion lambda del inicial al og inicial
-        og_transitions.add_transition(initial_state, "", og_initial_state)
+        og_transitions.add_transition(initial_state, None, og_initial_state)
         #transicion lambda del og final al og inicial
-        og_transitions.add_transition(og_final_state, "", og_initial_state)
+        og_transitions.add_transition(og_final_state, None, og_initial_state)
         #transicion lambda del og final al final
-        og_transitions.add_transition(og_final_state, "", final_state)
+        og_transitions.add_transition(og_final_state, None, final_state)
         #transicion lambda del inicial al final
-        og_transitions.add_transition(initial_state, "", final_state)
+        og_transitions.add_transition(initial_state, None, final_state)
         #quitar status de final a og final en estado y en conjunto
         og_final_state.set_final(False)
 
@@ -178,8 +193,12 @@ class REParser():
         #---------------------------------------------------------------------
         # TO DO: Implement this method...
         # A + B
-        initial_state = State("q0") # Se crea el estado inicial del nuevo automata
-        final_state = State("qf", True) # Se crea el estado final del nuevo automata
+        global state_counter
+
+        initial_state = State("q" + str(state_counter)) # Se crea el estado inicial del nuevo automata
+        state_counter += 1
+        final_state = State("q" + str(state_counter), True) # Se crea el estado final del nuevo automata
+        state_counter += 1
 
         og_initial_state_1 = automaton1.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state_1 = automaton1.get_final_state() # Se obtiene el estado final del automata original
@@ -194,7 +213,7 @@ class REParser():
         og_states_2 = automaton2.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
         #Unir transiciones de ambos automatas
-        og_transitions_1.add_transitions(og_transitions_2.get_all_transitions)
+        og_transitions_1.add_transitions(og_transitions_2.get_all_transitions())
         og_transitions = og_transitions_1
 
         #Union de conjuntos de los simbolos de ambos automatas
@@ -204,22 +223,22 @@ class REParser():
         og_states = og_states_1.union(og_states_2)
 
         #meter simbolo lambda en el conjunto de simbolos si esta no se encuentra en el set
-        if "" not in og_symbols:
-            og_symbols.add("")
+        if None not in og_symbols:
+            og_symbols.add(None)
 
         #transicion lambda del inicial al og inicial 1
-        og_transitions.add_transition(initial_state, "", og_initial_state_1)
+        og_transitions.add_transition(initial_state, None, og_initial_state_1)
         #transicion lambda del inicial al og inicial 2
-        og_transitions.add_transition(initial_state, "", og_initial_state_2)
+        og_transitions.add_transition(initial_state, None, og_initial_state_2)
 
         #quitar status de final a og final en estado y en conjunto
         og_final_state_1.set_final(False)
         og_final_state_2.set_final(False)
 
         #transicion lambda del final 1 al final
-        og_transitions.add_transition(og_final_state_1, "", final_state)
+        og_transitions.add_transition(og_final_state_1, None, final_state)
         #transicion lambda del final 2 al final
-        og_transitions.add_transition(og_final_state_2, "", final_state)
+        og_transitions.add_transition(og_final_state_2, None, final_state)
 
         #aniadir los estados nuevos inicial y final al conjunto de estados del automata
         og_states.add(initial_state)
@@ -257,7 +276,7 @@ class REParser():
         og_states_2 = automaton2.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
         #Unir transiciones de ambos automatas
-        og_transitions_1.add_transitions(og_transitions_2.get_all_transitions)
+        og_transitions_1.add_transitions(og_transitions_2.get_all_transitions())
         og_transitions = og_transitions_1
 
         #Union de conjuntos de los simbolos de ambos automatas
@@ -267,14 +286,14 @@ class REParser():
         og_states = og_states_1.union(og_states_2)
 
         #meter simbolo lambda en el conjunto de simbolos si esta no se encuentra en el set
-        if "" not in og_symbols:
-            og_symbols.add("")
+        if None not in og_symbols:
+            og_symbols.add(None)
 
         #quitar status de final a og final de 1 en estado y en conjunto
-        og_final_state_1.set_final(False)
+        og_final_state_1.is_final = False
 
         #transicion lambda del final 1 al final
-        og_transitions.add_transition(og_final_state_1, "", og_initial_state_2)
+        og_transitions.add_transition(og_final_state_1, None, og_initial_state_2)
 
         return FiniteAutomaton(og_initial_state_1, og_states, og_symbols, og_transitions) # Se crea el automata
         

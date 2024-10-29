@@ -57,14 +57,13 @@ class Transitions():
                 True si hay alguna transición
                 False otherwise
         """
-        #--------------------------------------------------
-        # A PROBAR por el estudiante
 
-        #--------------------------------------------------
-        ret = self.transitions.get(state, False)
+        #NOTE: Status = Implemented, not tested
+        ret = self.transitions.get(state)
         if ret is not False:
             return True
         return False
+
 
     def state_get_symbols(self, state: State):
         """
@@ -81,16 +80,14 @@ class Transitions():
             Observación:
                 Recomendable usar la función state_has_transitions
         """
-        #--------------------------------------------------
-        # A PROBAR por el estudiante
-
-        #--------------------------------------------------
+        #NOTE: Status = implemented, not tested
         if self.state_has_transitions(state):
-            dict_state = self.transitions.get(state, False) #Esto deberia devolver el valor de la clave state (que es otro diccionario con claves simbolos y valor estados a donde se puede transicionar)
-            if dict_state is False:
+            dict_state = self.transitions.get(state) #Esto deberia devolver el valor de la clave state (que es otro diccionario con claves simbolos y valor estados a donde se puede transicionar)
+            if dict_state is None:
                 return None
-            return dict_state.keys() #Esto deberia devolver las claves (que son los simbolos con los cuales se puede transicionar a otros estados)
+            return list(dict_state.keys()) #Esto deberia devolver la lista con claves (que son los simbolos con los cuales se puede transicionar a otros estados)
         return None
+
 
     def state_has_any_transition_with_symbol(self, state: State, symbol: str):
         """
@@ -109,17 +106,37 @@ class Transitions():
             Observación:
                 - Recomendable usar la función state_has_transitions
         """
-        #------------------------------------------------------
-        # TO-DO por el estudiante
-        #------------------------------------------------------
-        symbols = self.state_get_symbols(state)
-        if symbols is not None:
-            if symbol in symbols:
-                return True
-        return False
-        
-        
+        #NOTE: Status = Implemented, not tested
 
+        symbols = self.state_get_symbols(state) #Esta funcion ya llama a state_has_transitions
+        if symbols is None:
+            return False
+        if symbol in symbols:
+            return True
+        return False
+
+
+    def goes_to(self, state: State, symbol: str):
+        """
+            Esta función devuelve los estados a los que se transita desde el estado
+              state con el símbolo symbol
+
+            Args:
+                state: estado inicial de la transición
+                symbol: símbolo de la transición
+
+            Returns:
+                Set de estados a los que se transita. Ejemplo: {q1, q2}
+                None en caso de no existir
+
+            Observación:
+                - Recomendable usar la función state_has_any_transition_with_symbol
+        """
+        #NOTE: Status = Implemented, not tested
+        if self.state_has_any_transition_with_symbol(state, symbol):
+            return self.transitions.get(state).get(symbol)
+        return None
+    
 
     def state_has_transition_to(self, start_state: State, symbol: str, end_state: State):
         """
@@ -139,38 +156,13 @@ class Transitions():
             Observación:
                 - Recomendable usar la función state_has_any_transition_with_symbol
         """
-        #-------------------------------------------------------
-        # TO-DO por el estudiante
-        #-------------------------------------------------------
+        #NOTE: Status = Implemented, not tested
         if self.state_has_any_transition_with_symbol(start_state, symbol):
-            if end_state in self.transitions[start_state][symbol]:
+            states = self.goes_to(start_state, symbol)
+            if end_state in states:
                 return True
+                
         return False
-
-    def goes_to(self, state: State, symbol: str):
-        """
-            Esta función devuelve los estados a los que se transita desde el estado
-              state con el símbolo symbol
-
-            Args:
-                state: estado inicial de la transición
-                symbol: símbolo de la transición
-
-            Returns:
-                Set de estados a los que se transita. Ejemplo: {q1, q2}
-                None en caso de no existir
-
-            Observación:
-                - Recomendable usar la función state_has_any_transition_with_symbol
-        """
-        #-------------------------------------------------------
-        # TO-DO por el estudiante
-
-        #-------------------------------------------------------
-        if self.state_has_any_transition_with_symbol(state, symbol):
-            dict_state = self.transitions[state].get(symbol, set())
-            return dict_state
-        return None
 
         
     def add_transition(self, start_state: State, symbol: str, end_state: State):
@@ -196,20 +188,15 @@ class Transitions():
 
         if self.state_has_transition_to(start_state, symbol, end_state):
             raise ValueError("Repeated transition for state '%s'"%start_state)
-        
-        #----------------------------------------------------------
-        # TO-DO por el estudiante
-        #----------------------------------------------------------
-        
+
+        #NOTE: Status = Implemented, not tested
         if start_state not in self.transitions:
-            self.transitions[start_state] = {}
+            self.transitions[start_state] = {} #Crea una nueva clave con valor vacio
         
         if self.state_has_any_transition_with_symbol(start_state, symbol) == False:
-            self.transitions[start_state][symbol] = set()
+            self.transitions[start_state][symbol] = set() #Crea un conjunto de estados en caso de que no haya transiciones desde el estado inicial con el simbolo dado
         
-        self.transitions[start_state][symbol].add(end_state)
-            
-        
+        self.transitions[start_state][symbol].add(end_state) #Aniade el estado final partiendo del estado inicial y el simbolo con el que se transita
             
             
     def add_transitions(self, transitions: list):

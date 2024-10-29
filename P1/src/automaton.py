@@ -121,7 +121,7 @@ class FiniteAutomaton():
         for state in self.current_states:
             new_s = self.transitions.goes_to(state, symbol)
             if new_s:
-                new_states.update(new_s)
+                new_states.update(new_s)        
             
         # Si se encontraron nuevos estados, actualizar los estados actuales
         if new_states:
