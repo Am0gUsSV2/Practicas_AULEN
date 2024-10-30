@@ -237,6 +237,29 @@ class FiniteAutomaton():
         # TO-DO por el estudiante
 
         #-------------------------------------------------
+        #TODO:
+        #   1- Eliminar estados inaccesibles mediante BFS
+        #BFS
+        cola = deque()
+        estados_visitables = set()
+        cola.append(self.initial_state)
+        #state = cola.popleft() #para extraer el primer elemento de la cola
+        while cola:
+            estado_actual = cola.popleft()
+            estados_encontrados = self.transitions.state_get_all_states_from(estado_actual)
+            for estado in estados_encontrados:
+                if estado not in estados_visitables:
+                    estados_visitables.add(estado)
+                    cola.append(estado)
+        estados_inalcanzables = self.states.difference(estados_visitables)
+
+        #Se eliminan los estados inalcanzables del conjunto de estados del automata y del diccionario de transiciones
+        for estado in estados_inalcanzables:
+            self.states.remove(estado)
+            del self.transitions[estado]
+
+
+        #   2- Clases de equivalencia
         return FiniteAutomaton(dfam_initial_state, dfam_states, dfam_symbols, dfam_transitions)
     
     # END Funciones relacionadas con minimizar el AFD
