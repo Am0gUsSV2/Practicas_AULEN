@@ -275,11 +275,117 @@ class FiniteAutomaton():
         """
         if not is_deterministic(self):
             raise ValueError("The automaton must be deterministic")
+        flag = 0
 
         #-------------------------------------------------
         # TO-DO por el estudiante
 
         #-------------------------------------------------
+        #TODO:
+        #   1- Eliminar estados inaccesibles mediante BFS
+        #BFS
+        cola = deque()
+        estados_visitables = set()
+        cola.append(self.initial_state)
+        #state = cola.popleft() #para extraer el primer elemento de la cola
+        while cola:
+            estado_actual = cola.popleft()
+            estados_encontrados = self.transitions.state_get_all_states_from(estado_actual)
+            for estado in estados_encontrados:
+                if estado not in estados_visitables:
+                    estados_visitables.add(estado)
+                    cola.append(estado)
+        estados_inalcanzables = self.states.difference(estados_visitables)
+
+        #Se eliminan los estados inalcanzables del conjunto de estados del automata y del diccionario de transiciones
+        for estado in estados_inalcanzables:
+            self.states.remove(estado)
+            del self.transitions[estado]
+
+        # 2- Clases de equivalencia
+        dict1 = {}
+        dict2 = {}
+
+        #Primera iteracion
+        for state in self.states:
+            if state.is_final_state() is True:
+                dict1[state] = 1
+            else:
+                dict1[state] = 0
+            dict2[state] = None
+
+        counter = len(self.states)
+
+        flag = False
+        while flag is False:
+            eq_class = 0
+            i = 0
+            while i < counter:
+                first_eq = 1
+                for state in self.states: 
+                    if dict2[state] == None: #No tiene clase de equivalencia asignada
+                        if first_eq > 0:
+                            dict2[state] = eq_class
+                            first_eq -= 1
+                            eq_class += 1
+                            og_state = state
+                            i += 1
+                        else:
+                            if dict1[state] == dict1[og_state]: #Es equivalente a A en la iteracion anterior
+                                if transit_to_same_eq_class(dict1, dict2, og_state, state):
+                                    dict2[state] = eq_class
+                                    i += 1
+
+            flag = dicts_are_equal(dict1, dict2)
+            if flag is False:
+                #se pasa la lista 2 a la 1 y la 2 se limpia
+                for state in self.states:
+                    dict1[state] = dict2[state]
+                    dict2[state] = None
+
+        
+        dict_inv = {}
+        for k, v in dict1.items():
+            if v not in dict_inv:
+                dict_inv[v] = []
+            dict_inv[v].append(k)
+
+        """
+        {
+        0: ['q0', 'q1']
+        1: ['q2', 'q3']
+        }
+        
+        """
+        dfam_states = set()
+        dfam_initial_state : State
+        dfam_symbols = self.symbols
+        dfam_transitions : Transitions
+
+
+        #Se crean los nuevos estados
+        for key in dict_inv:
+            is_final = False
+            is_initial = False
+            name = ""
+            for state in dict_inv[key]:
+                if state.is_final_state():
+                    is_final = True
+                if state.__eq__(self.initial_state):
+                    is_initial = True
+                name += state.get_name()
+
+            if is_initial is True:
+                dfam_initial_state = State(name, is_final)
+                dfam_states.add(dfam_initial_state)
+            else:
+                aux_state = State(name, is_final)
+                dfam_states.add(aux_state)
+
+        #TODO Crear las nuevas transiciones
+            
+
+        
         return FiniteAutomaton(dfam_initial_state, dfam_states, dfam_symbols, dfam_transitions)
     
     # END Funciones relacionadas con minimizar el AFD
@@ -289,3 +395,15 @@ def get_set_name(state_set):
     
 def has_set_a_final_state(state_set):
     return any(state.is_final for state in state_set)
+
+def transit_to_same_eq_class(dict1 : dict, dict2 : dict, og_state : State, current_state : State) -> bool:
+    #TODO Implementar la funcion
+    return True
+
+def dicts_are_equal(dict1 : dict, dict2 : dict) -> bool:
+    states = dict1.keys()
+    flag = True
+    for state in states and flag == True:
+        if dict1[state] != dict2[state]:
+            flag = False
+    return flag

@@ -45,14 +45,14 @@ class Transitions():
         )
 
     def state_get_all_states_from(self, state: State):
-    lista = []
-    simbolos_transiciones = self.transitions.get(state) #Se obtienen los simbolos y a que estados transicionan
-    claves = simbolos_transiciones.keys() #Se obtienen los simbolos que se usan para transicionar
-    for clave in claves:
-        estados = simbolos_transiciones.get(clave) #Se obtienen los estados dado el simbolo
-        for estado in estados:
-            lista.append(estado) #Se aniade cada estado a la lista
-    return lista
+        lista = []
+        simbolos_transiciones = self.transitions.get(state) #Se obtienen los simbolos y a que estados transicionan
+        claves = simbolos_transiciones.keys() #Se obtienen los simbolos que se usan para transicionar
+        for clave in claves:
+            estados = simbolos_transiciones.get(clave) #Se obtienen los estados dado el simbolo
+            for estado in estados:
+                lista.append(estado) #Se aniade cada estado a la lista
+        return lista
 
 
 

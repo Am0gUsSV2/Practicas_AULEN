@@ -36,3 +36,6 @@ class State():
     
     def set_final(self, status):
         self.is_final = status
+
+    def get_name(self):
+        return self.name
