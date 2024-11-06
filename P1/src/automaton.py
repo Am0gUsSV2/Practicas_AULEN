@@ -68,7 +68,7 @@ class FiniteAutomaton():
         return self.transitions.goes_to(state, symbol)
         
     def get_all_transitions(self):
-        return self.transitions
+        return self.transitions.get_all_transitions()
     
     def get_initial_state(self):
         return self.initial_state
@@ -100,7 +100,7 @@ class FiniteAutomaton():
             Returns: No return
         """
         current_states = {self.initial_state}
-        self.current_states = self._complete_lambdas(current_states)
+        self.current_states = self._complete_lambdas(current_states) #clausura lamda
 
     def process_symbol(self, symbol: str):
         """
@@ -121,7 +121,7 @@ class FiniteAutomaton():
         for state in self.current_states:
             new_s = self.transitions.goes_to(state, symbol)
             if new_s:
-                new_states.update(new_s)        
+                new_states.update(new_s)
             
         # Si se encontraron nuevos estados, actualizar los estados actuales
         if new_states:
@@ -202,20 +202,63 @@ class FiniteAutomaton():
     # BEGIN Funciones relacionadas con generar el AFD
 
     def to_deterministic(self):
-        """
-            Esta función construye un Autómata Finito Determinista a partir del
-              automata original.
+        self.reset()
+        
+        dfa_symbols = set(self.symbols) - {None}
+        initial_state = self.current_states
+        initial_state_name = ','.join(sorted(state.name for state in initial_state))
+        dfa_transitions = Transitions()       
+        dfa_states = set()
+        processed_states = {}
+        empty = State('empty', is_final=False)
+        
+        
+        es_final = any(s.is_final for s in initial_state)
+        dfa_initial_state = State(initial_state_name, es_final)
+        dfa_states.add(dfa_initial_state)
+        processed_states[initial_state_name] = dfa_initial_state
+        queue = deque([initial_state])
+        
+        while queue:
+            current_state = queue.popleft()
+            current_state_name = ','.join(sorted(state.name for state in current_state))
+            dfa_state = processed_states[current_state_name]
+            
+            for symbol in dfa_symbols:
+                self.current_states = current_state
+                self.process_symbol(symbol)
+                
+                new_s_with_clausura = self.current_states
+                new_s_name = ','.join(sorted(state.name for state in new_s_with_clausura))
+                
+                if not new_s_with_clausura:
+                    new_dfa_state = empty
+                    new_s_with_clausura = {empty}
+                else:
+                    if new_s_name not in processed_states:
+                        es_final = any(s.is_final for s in new_s_with_clausura)
+                        new_dfa_state = State(new_s_name, es_final)
+                        dfa_states.add(new_dfa_state)
+                        processed_states[new_s_name] = new_dfa_state
+                        queue.append(new_s_with_clausura)
+                    else:
+                        new_dfa_state = processed_states[new_s_name]
 
-            Args: No args
+                # Añadir la transición
+                if not dfa_transitions.state_has_any_transition_with_symbol(dfa_state, symbol):
+                    dfa_transitions.add_transition(dfa_state, symbol, new_dfa_state)
 
-            Return:
-                Un autómata finito determinista
-        """
-        #--------------------------------------------------
-        # TO-DO por el estudiante
+        # Asegurarse de que empty tiene transiciones a sí mismo
+        for symbol in dfa_symbols:
+            if not dfa_transitions.state_has_any_transition_with_symbol(empty, symbol):
+                dfa_transitions.add_transition(empty, symbol, empty)
+                
+        
 
-        #--------------------------------------------------
+        dfa_states.add(empty)
+
         return FiniteAutomaton(dfa_initial_state, dfa_states, dfa_symbols, dfa_transitions)
+  
 
     # END Funciones relacionadas con generar el AFD
 
@@ -237,29 +280,12 @@ class FiniteAutomaton():
         # TO-DO por el estudiante
 
         #-------------------------------------------------
-        #TODO:
-        #   1- Eliminar estados inaccesibles mediante BFS
-        #BFS
-        cola = deque()
-        estados_visitables = set()
-        cola.append(self.initial_state)
-        #state = cola.popleft() #para extraer el primer elemento de la cola
-        while cola:
-            estado_actual = cola.popleft()
-            estados_encontrados = self.transitions.state_get_all_states_from(estado_actual)
-            for estado in estados_encontrados:
-                if estado not in estados_visitables:
-                    estados_visitables.add(estado)
-                    cola.append(estado)
-        estados_inalcanzables = self.states.difference(estados_visitables)
-
-        #Se eliminan los estados inalcanzables del conjunto de estados del automata y del diccionario de transiciones
-        for estado in estados_inalcanzables:
-            self.states.remove(estado)
-            del self.transitions[estado]
-
-
-        #   2- Clases de equivalencia
         return FiniteAutomaton(dfam_initial_state, dfam_states, dfam_symbols, dfam_transitions)
     
     # END Funciones relacionadas con minimizar el AFD
+
+def get_set_name(state_set):
+    return ','.join(sorted(state.name for state in state_set))
+    
+def has_set_a_final_state(state_set):
+    return any(state.is_final for state in state_set)
