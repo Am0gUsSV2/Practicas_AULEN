@@ -362,29 +362,42 @@ class FiniteAutomaton():
         dfam_symbols = self.symbols
         dfam_transitions : Transitions
 
-
+        dict_transitions = {}
         #Se crean los nuevos estados
         for key in dict_inv:
             is_final = False
             is_initial = False
-            name = ""
             for state in dict_inv[key]:
                 if state.is_final_state():
                     is_final = True
                 if state.__eq__(self.initial_state):
                     is_initial = True
-                name += state.get_name()
-
+            name = self.get_set_name(dict_inv[key])
             if is_initial is True:
                 dfam_initial_state = State(name, is_final)
                 dfam_states.add(dfam_initial_state)
+                dict_transitions[dfam_initial_state] = dict_inv[key]
             else:
                 aux_state = State(name, is_final)
                 dfam_states.add(aux_state)
+                dict_transitions[aux_state] = dict_inv[key]
+          
 
         #TODO Crear las nuevas transiciones
-            
+        used_states = set()
 
+        for state in self.states:
+            if state not in used_states:
+                for start_state in dfam_states:
+                    if state in dict_transitions[start_state]:
+                        for symbol in self.symbols:
+                            state_to_transit = self.transitions.goes_to(state, symbol)
+                            for end_state in dfam_states:
+                                if state_to_transit in dict_transitions[end_state]:
+                                    dfam_transitions.add_transition(start_state, symbol, end_state)
+                                    for u_state in dict_transitions[start_state]:
+                                        used_states.add(u_state)
+                                    
         
         return FiniteAutomaton(dfam_initial_state, dfam_states, dfam_symbols, dfam_transitions)
     
@@ -396,8 +409,12 @@ def get_set_name(state_set):
 def has_set_a_final_state(state_set):
     return any(state.is_final for state in state_set)
 
-def transit_to_same_eq_class(dict1 : dict, dict2 : dict, og_state : State, current_state : State) -> bool:
+def transit_to_same_eq_class(self, dict1 : dict, dict2 : dict, og_state : State, current_state : State) -> bool:
     #TODO Implementar la funcion
+    flag = True
+    for symbol in self.symbols and flag is True:
+        if dict1[self.transitions.goes_to(og_state, symbol)] != dict1[self.transitions.goes_to(current_state, symbol)]:
+            flag = False
     return True
 
 def dicts_are_equal(dict1 : dict, dict2 : dict) -> bool:
