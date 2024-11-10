@@ -135,13 +135,13 @@ def write_dot(automaton):
         "\n"
         + "  node [shape = point]; __start_point__\n"
         + "".join(
-            f"  {s.name}[shape={shape_dict[s.is_final]}]\n"
+            f"\"{s.name}\"[shape={shape_dict[s.is_final]}]\n"
             for s in automaton.states
         )
         + "\n"
         + f"  __start_point__ -> {automaton.initial_state.name}\n"
         + "".join(
-            f"  {t[0].name} -> {t[2].name}"
+            f"  \"{t[0].name}\" -> \"{t[2].name}\""
             f"[label=\"{symbol_repr(t[1])}\"]\n"
             for t in automaton.get_all_transitions()
         )

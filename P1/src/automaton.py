@@ -287,6 +287,7 @@ class FiniteAutomaton():
         cola = deque()
         estados_visitables = set()
         cola.append(self.initial_state)
+        estados_visitables.add(self.initial_state)
         #state = cola.popleft() #para extraer el primer elemento de la cola
         while cola:
             estado_actual = cola.popleft()
@@ -295,12 +296,16 @@ class FiniteAutomaton():
                 if estado not in estados_visitables:
                     estados_visitables.add(estado)
                     cola.append(estado)
-        estados_inalcanzables = self.states.difference(estados_visitables)
+        estados_inalcanzables = set(self.states).difference(estados_visitables)
 
         #Se eliminan los estados inalcanzables del conjunto de estados del automata y del diccionario de transiciones
         for estado in estados_inalcanzables:
-            self.states.remove(estado)
+            set(self.states).remove(estado)
             del self.transitions.transitions[estado] #NOTE
+            print("se han eliminado los estados")
+            print(estado)
+            # print("Se han eliminado las transiciones: ")
+            # print(tran)
 
         #NOTE La eliminacion de estados inaccesibles funciona bien (Probado en notebook)
         #return FiniteAutomaton(self.initial_state, self.states, self.symbols, self.transitions)
@@ -320,10 +325,10 @@ class FiniteAutomaton():
         counter = len(self.states)
         flag = False
         #og_state : State
-        iteration = 0
-        print("Transiciones:")
-        print(self.transitions)
-        print("")
+        # iteration = 0
+        # print("Transiciones:")
+        # print(self.transitions)
+        # print("")
         while flag is False:
             eq_class = 0
             i = 0
@@ -353,18 +358,18 @@ class FiniteAutomaton():
                 eq_class += 1
 
             flag = dicts_are_equal(dict1, dict2)
-            print(f"Iteracion completa numero {iteration} ")
-            print("Dict1:")
-            print(dict1)
-            print("Dict2:")
-            print(dict2)
-            print("")
+            # print(f"Iteracion completa numero {iteration} ")
+            # print("Dict1:")
+            # print(dict1)
+            # print("Dict2:")
+            # print(dict2)
+            # print("")
             
             if flag is False:
                 for state in self.states:
                     dict1[state] = dict2[state]
                     dict2[state] = None
-            iteration += 1
+            # iteration += 1
 
         
         dict_inv = {}
@@ -373,18 +378,18 @@ class FiniteAutomaton():
                 dict_inv[v] = []
             dict_inv[v].append(k)
 
-        """
-        {
-        0: ['q0', 'q1']
-        1: ['q2', 'q3']
-        }
+        # """
+        # {
+        # 0: ['q0', 'q1']
+        # 1: ['q2', 'q3']
+        # }
         
-        """
-        print("Resultado de diccionarios iguales:")
-        print(dict1)
-        print(dict2)
+        # """
+        # print("Resultado de diccionarios iguales:")
+        # print(dict1)
+        # print(dict2)
         dfam_states = set()
-        dfam_initial_state : State
+        dfam_initial_state = None
         dfam_symbols = self.symbols
         dfam_transitions = Transitions()
 
@@ -398,15 +403,15 @@ class FiniteAutomaton():
                     is_final = True
                 if state.__eq__(self.initial_state):
                     is_initial = True
-            name = get_set_name(dict_inv[key])
-            if is_initial is True:
-                dfam_initial_state = State(name, is_final)
-                dfam_states.add(dfam_initial_state)
-                dict_transitions[dfam_initial_state] = dict_inv[key]
-            else:
-                aux_state = State(name, is_final)
-                dfam_states.add(aux_state)
-                dict_transitions[aux_state] = dict_inv[key]
+                name = get_set_name(dict_inv[key])
+                if is_initial is True:
+                    dfam_initial_state = State(name, is_final)
+                    dfam_states.add(dfam_initial_state)
+                    dict_transitions[dfam_initial_state] = dict_inv[key]
+                else:
+                    aux_state = State(name, is_final)
+                    dfam_states.add(aux_state)
+                    dict_transitions[aux_state] = dict_inv[key]
           
 
         #TODO Crear las nuevas transiciones
@@ -419,7 +424,7 @@ class FiniteAutomaton():
                         for symbol in self.symbols:
                             state_to_transit = self.transitions.goes_to(state, symbol)
                             for end_state in dfam_states:
-                                if state_to_transit in dict_transitions[end_state]:
+                                if next(iter(state_to_transit)) in dict_transitions[end_state]:
                                     dfam_transitions.add_transition(start_state, symbol, end_state)
                                     for u_state in dict_transitions[start_state]:
                                         used_states.add(u_state)

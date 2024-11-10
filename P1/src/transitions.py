@@ -145,7 +145,7 @@ class Transitions():
         """
         #NOTE: Status = Implemented, not tested
         if self.state_has_any_transition_with_symbol(state, symbol):
-            return self.transitions.get(state).get(str(symbol))
+            return self.transitions.get(state).get(symbol)
         return None
     
 
