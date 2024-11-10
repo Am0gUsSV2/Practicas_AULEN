@@ -300,8 +300,11 @@ class FiniteAutomaton():
         #Se eliminan los estados inalcanzables del conjunto de estados del automata y del diccionario de transiciones
         for estado in estados_inalcanzables:
             self.states.remove(estado)
-            del self.transitions[estado]
+            del self.transitions.transitions[estado] #NOTE
 
+        #NOTE La eliminacion de estados inaccesibles funciona bien (Probado en notebook)
+        #return FiniteAutomaton(self.initial_state, self.states, self.symbols, self.transitions)
+        
         # 2- Clases de equivalencia
         dict1 = {}
         dict2 = {}
@@ -315,8 +318,12 @@ class FiniteAutomaton():
             dict2[state] = None
 
         counter = len(self.states)
-
         flag = False
+        #og_state : State
+        iteration = 0
+        print("Transiciones:")
+        print(self.transitions)
+        print("")
         while flag is False:
             eq_class = 0
             i = 0
@@ -327,21 +334,37 @@ class FiniteAutomaton():
                         if first_eq > 0:
                             dict2[state] = eq_class
                             first_eq -= 1
-                            eq_class += 1
                             og_state = state
                             i += 1
                         else:
                             if dict1[state] == dict1[og_state]: #Es equivalente a A en la iteracion anterior
-                                if transit_to_same_eq_class(dict1, dict2, og_state, state):
+                                flag2 = True
+                                for symbol in self.symbols:
+                                    if flag2 is True:
+                                        xs1 = (self.transitions.transitions[state][str(symbol)])
+                                        xs2 = (self.transitions.transitions[og_state][str(symbol)])
+                                        val1= dict1[next(iter(xs1))]
+                                        val2 = dict1[next(iter(xs2))]
+                                        if val1 != val2:
+                                            flag2 = False
+                                if flag2 is True:#self.transit_to_same_eq_class(dict1, dict2, og_state, state): #NOTE
                                     dict2[state] = eq_class
                                     i += 1
+                eq_class += 1
 
             flag = dicts_are_equal(dict1, dict2)
+            print(f"Iteracion completa numero {iteration} ")
+            print("Dict1:")
+            print(dict1)
+            print("Dict2:")
+            print(dict2)
+            print("")
+            
             if flag is False:
-                #se pasa la lista 2 a la 1 y la 2 se limpia
                 for state in self.states:
                     dict1[state] = dict2[state]
                     dict2[state] = None
+            iteration += 1
 
         
         dict_inv = {}
@@ -357,10 +380,13 @@ class FiniteAutomaton():
         }
         
         """
+        print("Resultado de diccionarios iguales:")
+        print(dict1)
+        print(dict2)
         dfam_states = set()
         dfam_initial_state : State
         dfam_symbols = self.symbols
-        dfam_transitions : Transitions
+        dfam_transitions = Transitions()
 
         dict_transitions = {}
         #Se crean los nuevos estados
@@ -372,7 +398,7 @@ class FiniteAutomaton():
                     is_final = True
                 if state.__eq__(self.initial_state):
                     is_initial = True
-            name = self.get_set_name(dict_inv[key])
+            name = get_set_name(dict_inv[key])
             if is_initial is True:
                 dfam_initial_state = State(name, is_final)
                 dfam_states.add(dfam_initial_state)
@@ -401,6 +427,14 @@ class FiniteAutomaton():
         
         return FiniteAutomaton(dfam_initial_state, dfam_states, dfam_symbols, dfam_transitions)
     
+    def transit_to_same_eq_class(self, dict1 : dict, dict2 : dict, og_state : State, current_state : State) -> bool: #NOTE
+    
+        for symbol in self.symbols:
+            val1= dict1[(self.transitions.goes_to(og_state, symbol)).pop()]
+            val2 = dict1[(self.transitions.goes_to(current_state, symbol)).pop()]
+            if val1 != val2:
+                return False
+        return True
     # END Funciones relacionadas con minimizar el AFD
 
 def get_set_name(state_set):
@@ -409,18 +443,9 @@ def get_set_name(state_set):
 def has_set_a_final_state(state_set):
     return any(state.is_final for state in state_set)
 
-def transit_to_same_eq_class(self, dict1 : dict, dict2 : dict, og_state : State, current_state : State) -> bool:
-    #TODO Implementar la funcion
-    flag = True
-    for symbol in self.symbols and flag is True:
-        if dict1[self.transitions.goes_to(og_state, symbol)] != dict1[self.transitions.goes_to(current_state, symbol)]:
-            flag = False
-    return True
-
 def dicts_are_equal(dict1 : dict, dict2 : dict) -> bool:
     states = dict1.keys()
-    flag = True
-    for state in states and flag == True:
+    for state in states:
         if dict1[state] != dict2[state]:
-            flag = False
-    return flag
+            return False
+    return True

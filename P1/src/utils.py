@@ -143,7 +143,7 @@ def write_dot(automaton):
         + "".join(
             f"  {t[0].name} -> {t[2].name}"
             f"[label=\"{symbol_repr(t[1])}\"]\n"
-            for t in automaton.get_all_transitions().get_all_transitions()
+            for t in automaton.get_all_transitions()
         )
         + "}\n"
     )
