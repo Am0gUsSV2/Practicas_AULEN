@@ -217,19 +217,39 @@ class LL1Table:
         i = 0
         # TODO: Complete this method for exercise 1...
         stack = deque()
-        stack.appendleft("$")
-        stack.appendleft(start)
+        end = ParseTree('$')
+        stack.appendleft(end)
         tree = ParseTree(start)
+        stack.appendleft(tree)
 
         while stack:
             element = stack.popleft()
-            if element in self.non_terminals:
-                if self.cells[]
+            if element.root in self.non_terminals:
+                next = self.cells[element.root][input_string[i]]
+                if next:
+                    cld = []
+                    if next != '': #El simbolo de la tabla es distinto de la cadena vacia
+                        for e in next: #Por cada simbolo se aniade a la pila y se crea un parse tree
+                            n_aux = ParseTree(e)
+                            stack.appendleft(n_aux)
+                            cld.append(n_aux)
+                    else: #El simbolo de la tabla es la cadena vacia
+                        cld.append(ParseTree(next)) #Se crea un parse tree con la cadena vacia, sin meter en la pila
+                    element.add_children(cld) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
 
-            if element in self.terminals:
-                if element != input_string[i]:
-                    raise SyntaxError(Exception) #NOTE: No se si esto funciona asi, revisar
-                
+            if element.root in self.terminals:
+                if element.root != input_string[i]:
+                    print("ERROR: El elemento de la pila no coincide con el de la cadena")
+                    return
+                    #raise SyntaxError(Exception) #NOTE: No se si esto funciona asi, revisar
+                i += 1
+                if element.root == '$':
+                    if input_string[i]:
+                        print("Error, hay elementos detras del simbolo \"$\" en la cadena")
+                        #NOTE: Aqui debe salir excepcion ???
+                        #raise SyntaxError(Exception) #NOTE: No se si esto funciona asi, revisar
+                        return
+                    return tree
     
 class ParseTree():
     """
