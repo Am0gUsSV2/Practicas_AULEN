@@ -226,8 +226,10 @@ class LL1Table:
         stack.appendleft(end)
         tree = ParseTree(start)
         stack.appendleft(tree)
+        print(f"El string a analizar es {input_string}")
+        len_string = len(input_string)
 
-        while stack:
+        while stack and i <len_string:
             element = stack.popleft()
             if element.root in self.non_terminals:
                 print(f"Elemento popeado = {element.root}")
@@ -252,26 +254,17 @@ class LL1Table:
 
             elif element.root in self.terminals:
                 if element.root != input_string[i]:
-                    print(f"Elemento del string: {input_string[i]}")
-                    print(f"Elemento de la pila: {element.root}")
-                    print(f"Indice del string {i}")
-                    print("ERROR: El elemento de la pila no coincide con el de la cadena")
-                    print(f"Arbol fallido {tree}")
-                    raise SyntaxError("xd") #NOTE: No se si esto funciona asi, revisar
-                print(f"Elemento del string: {input_string[i]}")
-                print(f"Elemento de la pila: {element.root}")
-                print(f"TERMINAL: {input_string[i]}")
+                    raise SyntaxError("El elemento terminal de la pila no coincide con el elemento del string")
                 i += 1
                 
                 if element.root == '$':
                     if i < len(input_string):
-                        print("Error, hay elementos detras del simbolo \"$\" en la cadena")
-                        #NOTE: Aqui debe salir excepcion ???
-                        raise SyntaxError("xd") #NOTE: No se si esto funciona asi, revisar
+                        raise SyntaxError("Hay elementos detras del simbolo \"$\" en la cadena")
                     print(f"Arbol final = {tree}")
                     return tree
             else:
-                raise SyntaxError("xd")
+                raise SyntaxError("Creo que esto puede quitarse por la comprobacion de que los terminales del input esten en los terminales de la tabla")
+        raise SyntaxError("Se ha terminado de recorrer el string y la pila no esta vacía")
     
 class ParseTree():
     """
