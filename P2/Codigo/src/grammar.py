@@ -6,6 +6,7 @@ from typing import AbstractSet, Collection, MutableSet, Optional, Dict, List, Op
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
 
+
 class SyntaxError(Exception):
     """Exception for parsing errors."""
     pass
@@ -217,6 +218,9 @@ class LL1Table:
         """
         i = 0
         # TODO: Complete this method for exercise 1...
+        for elem in input_string:
+            if elem not in self.terminals:
+                raise SyntaxError("La cadena a analizar contiene terminales que no estan en la tabla LL1")
         stack = deque()
         end = ParseTree('$')
         stack.appendleft(end)
@@ -246,7 +250,7 @@ class LL1Table:
                 else:
                     print(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
 
-            if element.root in self.terminals:
+            elif element.root in self.terminals:
                 if element.root != input_string[i]:
                     print(f"Elemento del string: {input_string[i]}")
                     print(f"Elemento de la pila: {element.root}")
@@ -266,6 +270,8 @@ class LL1Table:
                         raise SyntaxError("xd") #NOTE: No se si esto funciona asi, revisar
                     print(f"Arbol final = {tree}")
                     return tree
+            else:
+                raise SyntaxError("xd")
     
 class ParseTree():
     """
