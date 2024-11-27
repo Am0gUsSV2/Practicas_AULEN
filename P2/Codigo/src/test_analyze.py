@@ -51,42 +51,35 @@ class TestAnalyze(unittest.TestCase):
                 with self.assertRaises(exception):
                     table.analyze(input_string, start)
 
-    # def test_case1(self) -> None:
-    #     """Test for syntax analysis from table."""
-    #     terminals = {"(", ")", "i", "+", "*", "$"}
-    #     non_terminals = {"E", "T", "X", "Y"}
-    #     cells = [('E', '(', 'TX'),
-    #              ('E', 'i', 'TX'),
-    #              ('T', '(', '(E)'),
-    #              ('T', 'i', 'iY'),
-    #              ('X', '+', '+E'),
-    #              ('X', ')', ''),
-    #              ('X', '$', ''),
-    #              ('Y', '*', '*T'),
-    #              ('Y', '+', ''),
-    #              ('Y', ')', ''),
-    #              ('Y', '$', '')]
-    #     table = LL1Table(non_terminals, terminals)
-    #     for (nt, t, body) in cells:
-    #         table.add_cell(nt, t, body)
+    def test_case1(self) -> None:
+        """Test for syntax analysis from table."""
+        terminals = {"(", ")", "i", "+", "*", "$"}
+        non_terminals = {"E", "T", "X", "Y"}
+        cells = [('E', '(', 'TX'),
+                 ('E', 'i', 'TX'),
+                 ('T', '(', '(E)'),
+                 ('T', 'i', 'iY'),
+                 ('X', '+', '+E'),
+                 ('X', ')', ''),
+                 ('X', '$', ''),
+                 ('Y', '*', '*T'),
+                 ('Y', '+', ''),
+                 ('Y', ')', ''),
+                 ('Y', '$', '')]
+        table = LL1Table(non_terminals, terminals)
+        for (nt, t, body) in cells:
+            table.add_cell(nt, t, body)
 
-    #     self._check_analyze(table, "i*i$", "E")
-    #     print("")
-    #     self._check_analyze(table, "i*i+i$", "E")
-    #     print("")
-    #     self._check_analyze(table, "i*i+i+(i*i)$", "E")
-    #     print("")
-    #     self._check_analyze(table, "a", "E", exception=SyntaxError)
-    #     print("")
-    #     self._check_analyze(table, "(i$", "E", exception=SyntaxError)
-    #     print("")
-    #     self._check_analyze(table, "i*i$i", "E", exception=SyntaxError)
-    #     print("")
-    #     self._check_analyze(table, "i*i", "E", exception=SyntaxError)
-    #     print("")
-    #     self._check_analyze(table, "+i*i", "E", exception=SyntaxError)
+        self._check_analyze(table, "i*i$", "E")
+        self._check_analyze(table, "i*i+i$", "E")
+        self._check_analyze(table, "i*i+i+(i*i)$", "E")
+        self._check_analyze(table, "a", "E", exception=SyntaxError)
+        self._check_analyze(table, "(i$", "E", exception=SyntaxError)
+        self._check_analyze(table, "i*i$i", "E", exception=SyntaxError)
+        self._check_analyze(table, "i*i", "E", exception=SyntaxError)
+        self._check_analyze(table, "+i*i", "E", exception=SyntaxError)
         
-
+    #TEST PARA EJERCICIO 4
     # def test_case2(self) -> None:
     #     """Test for syntax analysis from grammar."""
     #     grammar_str = """
@@ -109,6 +102,7 @@ class TestAnalyze(unittest.TestCase):
     #     self._check_analyze_from_grammar(grammar, "i*i$i", "E", exception=SyntaxError)
     #     self._check_analyze_from_grammar(grammar, "i*i", "E", exception=SyntaxError)
     #     self._check_analyze_from_grammar(grammar, "+i*i", "E", exception=SyntaxError)
+
 
     def test_case3(self) -> None:
         """Test for parse tree construction."""
@@ -140,7 +134,6 @@ class TestAnalyze(unittest.TestCase):
         t09 = ParseTree("i")
         t10 = ParseTree("T", [t09, t08])
         tree = ParseTree("E", [t10, t02])
-        print(f"El arbol es: {tree}")
   
         self._check_parse_tree(table, "i*i$", "E", tree)
 

@@ -9,7 +9,8 @@ class RepeatedCellError(Exception):
 
 class SyntaxError(Exception):
     """Exception for parsing errors."""
-    pass
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
 
 class Grammar:
     """
@@ -217,7 +218,6 @@ class LL1Table:
         código funciona de manera correcta.
         """
         i = 0
-        # TODO: Complete this method for exercise 1...
         for elem in input_string:
             if elem not in self.terminals:
                 raise SyntaxError("La cadena a analizar contiene terminales que no estan en la tabla LL1")
@@ -235,16 +235,15 @@ class LL1Table:
                 if next is not None:
                     cld = []
                     if next != '': #El simbolo de la tabla es distinto de la cadena vacia
-                        for e in next: #Por cada simbolo se aniade a la pila y se crea un parse tree
-                            
+                        for e in next[::-1]: #Por cada simbolo se aniade a la pila y se crea un parse tree
                             n_aux = ParseTree(e)
                             stack.append(n_aux)
                             cld.append(n_aux)
                     else: #El simbolo de la tabla es la cadena vacia
                         cld.append(ParseTree('λ')) #Se crea un parse tree con la cadena vacia, sin meter en la pila
-                    element.add_children(cld) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
+                    element.add_children(cld[::-1]) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
                 else:
-                    print(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
+                    raise SyntaxError(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
 
             elif element.root in self.terminals:
                 if element.root != input_string[i]:
@@ -254,10 +253,9 @@ class LL1Table:
                 if element.root == '$':
                     if i < len(input_string):
                         raise SyntaxError("Hay elementos detras del simbolo \"$\" en la cadena")
-                    print(f"Arbol final = {tree}")
                     return tree
             else:
-                raise SyntaxError("Creo que esto puede quitarse por la comprobacion de que los terminales del input esten en los terminales de la tabla")
+                raise SyntaxError(f"{element.root} no pertenece ni a la lista de simbolos terminales ni a la de no terminales")
         raise SyntaxError("Se ha terminado de recorrer el string y la pila no esta vacía")
     
 class ParseTree():
