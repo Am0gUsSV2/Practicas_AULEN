@@ -102,8 +102,29 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
+        #NOTE:Status = Implemented. Test = Not tested 
+        if symbol not in self.non_terminals:
+                raise ValueError(f"El simbolo {symbol} no pertenece al conjunto de simbolos no terminales de la gramatica")
+        
+        abs_set1 = {}
+        abs_set2 = {}
+        flag = True
+        while flag:
+            for key in self.productions.keys():
+                production = self.productions[key]
+                len_prod = len(production)
+                for i in range(len_prod):
+                    if production[i] == symbol:
+                        if (i == (len_prod - 1)) or ('λ' in self.compute_first(production[i+1])): #No tiene mas elementos detras suya
+                            abs_set2.add(self.compute_follow(key))
+                        else:
+                            elem = self.compute_first(production[i+1])
+                            elem.remove('λ')
+                            abs_set2.add(elem)
+            if(abs_set1 != abs_set2):
+                abs_set1 = abs_set2.copy()
 
-	# TO-DO: Complete this method for exercise 3...
+        return abs_set2            
 
 
     def get_ll1_table(self) -> Optional[LL1Table]:
