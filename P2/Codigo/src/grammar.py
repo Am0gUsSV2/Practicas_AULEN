@@ -66,6 +66,8 @@ class Grammar:
         self.non_terminals = non_terminals
         self.productions = productions
         self.axiom = axiom
+        self.first_sets = {symbol: set() for symbol in terminals | non_terminals}
+        self.follow_sets = {symbol: set() for symbol in terminals | non_terminals}
 
     def __repr__(self) -> str:
         return (
@@ -75,18 +77,53 @@ class Grammar:
             f"axiom={self.axiom!r}, "
             f"productions={self.productions!r})"
         )
-
+        
 
     def compute_first(self, sentence: str) -> AbstractSet[str]:
         """
-        Method to compute the first set of a string.
+        Calcula el conjunto First.
 
         Args:
-            str: string whose first set is to be computed.
+            sentence: Secuencia de símbolos para la que se calculará el conjunto First.
 
         Returns:
-            First set of str.
+            Conjunto First de la secuencia.
         """
+        work_stack = [sentence]  # Pila para procesar las sentences
+        computed_first = set()   # Conjunto First calculado para la sentence actual
+        
+        while work_stack:
+            current_sentence = work_stack.pop()
+            temp_first = set()
+
+            for symbol in current_sentence:
+                if symbol in self.terminals:
+                    temp_first.add(symbol)
+                    break  # Un terminal define el First y se detiene aquí
+                elif symbol in self.non_terminals:
+                    # Calculamos si el First del no terminal aún no está calculado
+                    if not self.first_sets[symbol]:
+                        # Agregamos todas sus producciones al stack para calcularlas iterativamente
+                        for production in self.productions[symbol]:
+                            work_stack.append(production)
+                    temp_first.update(self.first_sets[symbol] - {""})
+
+                    if "" not in self.first_sets[symbol]:
+                        break  # No hay epsilon, se detiene aquí
+                else:
+                    raise ValueError(f"Símbolo no válido en la sentence: {symbol}")
+            else:
+                # Si llegamos aquí, significa que todos los símbolos tienen ε en su First
+                temp_first.add("")
+
+            # Guardamos el conjunto temporal calculado
+            computed_first.update(temp_first)
+            
+            # Actualizamos el First almacenado para la sentence si cambia
+            if sentence not in self.first_sets or self.first_sets[sentence] != computed_first:
+                self.first_sets[sentence] = computed_first
+
+        return computed_first
 
 	# TODO: Complete this method for exercise 2...
 
@@ -101,6 +138,31 @@ class Grammar:
         Returns:
             Follow set of symbol.
         """
+        #NOTE:Status = Implemented. Test = Not tested 
+        if symbol not in self.non_terminals:
+                raise ValueError(f"El simbolo {symbol} no pertenece al conjunto de simbolos no terminales de la gramatica")
+        
+        abs_set1 = {}
+        abs_set2 = {}
+        flag = True
+        while flag:
+            for key in self.productions.keys():
+                production = self.productions[key]
+                len_prod = len(production)
+                for i in range(len_prod):
+                    if production[i] == symbol:
+                        if (i == (len_prod - 1)) or ('λ' in self.compute_first(production[i+1])): #No tiene mas elementos detras suya
+                            abs_set2.add(self.compute_follow(key))
+                        else:
+                            elem = self.compute_first(production[i+1])
+                            elem.remove('λ')
+                            abs_set2.add(elem)
+            if(abs_set1 != abs_set2):
+                abs_set1 = abs_set2.copy()
+
+        return abs_set2   
+        
+        
 
 	# TO-DO: Complete this method for exercise 3...
 
@@ -217,40 +279,32 @@ class LL1Table:
         código funciona de manera correcta.
         """
         i = 0
-        # TODO: Complete this method for exercise 1...
         for elem in input_string:
             if elem not in self.terminals:
                 raise SyntaxError("La cadena a analizar contiene terminales que no estan en la tabla LL1")
-        stack = deque()
+        stack = []
         end = ParseTree('$')
-        stack.appendleft(end)
+        stack.append(end)
         tree = ParseTree(start)
-        stack.appendleft(tree)
-        print(f"El string a analizar es {input_string}")
+        stack.append(tree)
         len_string = len(input_string)
 
         while stack and i <len_string:
-            element = stack.popleft()
+            element = stack.pop()
             if element.root in self.non_terminals:
-                print(f"Elemento popeado = {element.root}")
-                print(f"Elemento del string = {input_string[i]}")
                 next = self.cells[element.root][input_string[i]]
-                print(f"Elemento de la tabla LL1 = {next}")
                 if next is not None:
                     cld = []
                     if next != '': #El simbolo de la tabla es distinto de la cadena vacia
-                        print(f"Se mete en pila {next}")
                         for e in next[::-1]: #Por cada simbolo se aniade a la pila y se crea un parse tree
-                            
                             n_aux = ParseTree(e)
-                            stack.appendleft(n_aux)
+                            stack.append(n_aux)
                             cld.append(n_aux)
-                        print(f"Estado pila tras push = {stack}")
                     else: #El simbolo de la tabla es la cadena vacia
-                        cld.append(ParseTree(next)) #Se crea un parse tree con la cadena vacia, sin meter en la pila
-                    element.add_children(cld) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
+                        cld.append(ParseTree('λ')) #Se crea un parse tree con la cadena vacia, sin meter en la pila
+                    element.add_children(cld[::-1]) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
                 else:
-                    print(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
+                    raise SyntaxError(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
 
             elif element.root in self.terminals:
                 if element.root != input_string[i]:
@@ -260,11 +314,11 @@ class LL1Table:
                 if element.root == '$':
                     if i < len(input_string):
                         raise SyntaxError("Hay elementos detras del simbolo \"$\" en la cadena")
-                    print(f"Arbol final = {tree}")
                     return tree
             else:
-                raise SyntaxError("Creo que esto puede quitarse por la comprobacion de que los terminales del input esten en los terminales de la tabla")
+                raise SyntaxError(f"{element.root} no pertenece ni a la lista de simbolos terminales ni a la de no terminales")
         raise SyntaxError("Se ha terminado de recorrer el string y la pila no esta vacía")
+    
     
 class ParseTree():
     """
