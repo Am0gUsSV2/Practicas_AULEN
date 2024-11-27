@@ -9,7 +9,8 @@ class RepeatedCellError(Exception):
 
 class SyntaxError(Exception):
     """Exception for parsing errors."""
-    pass
+    def __init__(self, mensaje):
+        super().__init__(mensaje)
 
 class Grammar:
     """
@@ -159,12 +160,8 @@ class Grammar:
                             abs_set2.add(elem)
             if(abs_set1 != abs_set2):
                 abs_set1 = abs_set2.copy()
-
-        return abs_set2   
-        
-        
-
-	# TO-DO: Complete this method for exercise 3...
+                
+        return abs_set2            
 
 
     def get_ll1_table(self) -> Optional[LL1Table]:
