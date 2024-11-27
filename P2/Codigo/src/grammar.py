@@ -221,33 +221,27 @@ class LL1Table:
         for elem in input_string:
             if elem not in self.terminals:
                 raise SyntaxError("La cadena a analizar contiene terminales que no estan en la tabla LL1")
-        stack = deque()
+        stack = []
         end = ParseTree('$')
-        stack.appendleft(end)
+        stack.append(end)
         tree = ParseTree(start)
-        stack.appendleft(tree)
-        print(f"El string a analizar es {input_string}")
+        stack.append(tree)
         len_string = len(input_string)
 
         while stack and i <len_string:
-            element = stack.popleft()
+            element = stack.pop()
             if element.root in self.non_terminals:
-                print(f"Elemento popeado = {element.root}")
-                print(f"Elemento del string = {input_string[i]}")
                 next = self.cells[element.root][input_string[i]]
-                print(f"Elemento de la tabla LL1 = {next}")
                 if next is not None:
                     cld = []
                     if next != '': #El simbolo de la tabla es distinto de la cadena vacia
-                        print(f"Se mete en pila {next}")
-                        for e in next[::-1]: #Por cada simbolo se aniade a la pila y se crea un parse tree
+                        for e in next: #Por cada simbolo se aniade a la pila y se crea un parse tree
                             
                             n_aux = ParseTree(e)
-                            stack.appendleft(n_aux)
+                            stack.append(n_aux)
                             cld.append(n_aux)
-                        print(f"Estado pila tras push = {stack}")
                     else: #El simbolo de la tabla es la cadena vacia
-                        cld.append(ParseTree(next)) #Se crea un parse tree con la cadena vacia, sin meter en la pila
+                        cld.append(ParseTree('λ')) #Se crea un parse tree con la cadena vacia, sin meter en la pila
                     element.add_children(cld) #Se aniaden los hijos al elemento actual del arbol (simbolos o la cadena vacia)
                 else:
                     print(f"No se ha encontrado entrada en la tabla para {element.root}, {input_string[i]}")
