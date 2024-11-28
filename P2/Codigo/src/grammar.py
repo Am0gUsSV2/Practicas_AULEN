@@ -131,53 +131,93 @@ class Grammar:
 
     def compute_follow(self, symbol: str) -> AbstractSet[str]:
         """
-        Method to compute the follow set of a non-terminal symbol.
+        Computes the follow set of a specific non-terminal symbol iteratively.
 
         Args:
-            symbol: non-terminal whose follow set is to be computed.
+            symbol: Non-terminal whose follow set is to be computed.
 
         Returns:
-            Follow set of symbol.
+            Follow set of the symbol.
         """
-        #NOTE:Status = Implemented. Test = Not tested 
         if symbol not in self.non_terminals:
-                raise ValueError(f"El simbolo {symbol} no pertenece al conjunto de simbolos no terminales de la gramatica")
+            raise ValueError(f"Symbol '{symbol}' must be a non-terminal.")
         
-        abs_set1 = {}
-        abs_set2 = {}
-        flag = True
-        while flag:
-            for key in self.productions.keys():
-                production = self.productions[key]
-                len_prod = len(production)
-                for i in range(len_prod):
-                    if production[i] == symbol:
-                        if (i == (len_prod - 1)) or ('λ' in self.compute_first(production[i+1])): #No tiene mas elementos detras suya
-                            abs_set2.add(self.compute_follow(key))
-                        else:
-                            elem = self.compute_first(production[i+1])
-                            elem.remove('λ')
-                            abs_set2.add(elem)
-            if(abs_set1 != abs_set2):
-                abs_set1 = abs_set2.copy()
-                
-        return abs_set2            
+        self.follow_sets[self.axiom].add("$")  
+
+        changed = True
+        while changed:
+            changed = False
+
+            # Recorrer las producciones de la gramática
+            for head, productions in self.productions.items():
+                for production in productions:
+                    follow_to_propagate = self.follow_sets[head]  # Follow(A) para regla (3)
+
+                    for i in range(len(production)):
+                        sym = production[i]
+
+                        if sym == symbol:
+                            # Si el símbolo actual es el que estamos procesando
+                            if i + 1 < len(production):
+                                next_symbol = production[i + 1]
+                                first_of_next = self.compute_first(next_symbol) - {""}
+
+                                # Regla 2: Si A -> aXB, añadir First(B) - {λ} a Follow(X)
+                                before = len(self.follow_sets[symbol])
+                                self.follow_sets[symbol].update(first_of_next)
+                                after = len(self.follow_sets[symbol])
+                                if after > before:
+                                    changed = True
+
+                            # Regla 3: Si A -> aX o A -> aXB con First(B) contiene λ
+                            if i + 1 == len(production) or "" in self.compute_first(production[i + 1]):
+                                before = len(self.follow_sets[symbol])
+                                self.follow_sets[symbol].update(follow_to_propagate)
+                                after = len(self.follow_sets[symbol])
+                                if after > before:
+                                    changed = True
+
+        return self.follow_sets[symbol]
+
+
+	# TO-DO: Complete this method for exercise 3...
 
 
     def get_ll1_table(self) -> Optional[LL1Table]:
         """
-        Method to compute the LL(1) table.
+        Método para calcular la tabla LL(1).
 
         Returns:
-            LL(1) table for the grammar, or None if the grammar is not LL(1).
+            La tabla LL(1) de la gramática, o None si la gramática no es LL(1).
         """
-
-	# TO-DO: Complete this method for exercise 4...
-
-
-    def is_ll1(self) -> bool:
-        return self.get_ll1_table() is not None
-
+        table = LL1Table(self.non_terminals, self.terminals | {'$'})
+        
+        # Recorremos todas las producciones para construir la tabla LL(1)
+        for non_terminal, productions in self.productions.items():
+            for production in productions:
+                # Calculamos el conjunto First de la producción
+                first_set = self.compute_first(production)
+                
+                for terminal in first_set - {""}:
+                    if terminal != "":  # Terminal válido
+                        if table.cells[non_terminal][terminal] is None:
+                            print(production + "(first) ->" + str(first_set))
+                            table.add_cell(non_terminal, terminal, production)
+                        else:
+                            # Conflicto: la gramática no es LL(1)
+                            return None
+                
+                # Si la producción puede derivar a vacío, añadimos Follow
+                if "" in first_set:
+                    follow_set = self.compute_follow(non_terminal)
+                    for terminal in follow_set:
+                        if table.cells[non_terminal][terminal] is None:
+                            table.add_cell(non_terminal, terminal, production)
+                        else:
+                            # Conflicto: la gramática no es LL(1)
+                            return None
+        
+        return table
 
 class LL1Table:
     """
