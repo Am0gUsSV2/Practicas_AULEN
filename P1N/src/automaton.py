@@ -68,6 +68,9 @@ class FiniteAutomaton():
         return self.transitions.goes_to(state, symbol)
         
     def get_all_transitions(self):
+        return self.transitions.get_all_transitions()
+
+    def get_object_transitions(self):
         return self.transitions
     
     def get_initial_state(self):
@@ -201,10 +204,61 @@ class FiniteAutomaton():
             Return:
                 Un autómata finito determinista
         """
-        #--------------------------------------------------
-        # TO-DO por el estudiante
+        self.reset()
+        
+        dfa_symbols = set(self.symbols) - {None}
+        initial_state = self.current_states
+        initial_state_name = ','.join(sorted(state.name for state in initial_state))
+        dfa_transitions = Transitions()       
+        dfa_states = set()
+        processed_states = {}
+        empty = State('empty', is_final=False)
+        
+        
+        es_final = any(s.is_final for s in initial_state)
+        dfa_initial_state = State(initial_state_name, es_final)
+        dfa_states.add(dfa_initial_state)
+        processed_states[initial_state_name] = dfa_initial_state
+        queue = deque([initial_state])
+        
+        while queue:
+            current_state = queue.popleft()
+            current_state_name = ','.join(sorted(state.name for state in current_state))
+            dfa_state = processed_states[current_state_name]
+            
+            for symbol in dfa_symbols:
+                self.current_states = current_state
+                self.process_symbol(symbol)
+                
+                new_s_with_clausura = self.current_states
+                new_s_name = ','.join(sorted(state.name for state in new_s_with_clausura))
+                
+                if not new_s_with_clausura:
+                    new_dfa_state = empty
+                    new_s_with_clausura = {empty}
+                else:
+                    if new_s_name not in processed_states:
+                        es_final = any(s.is_final for s in new_s_with_clausura)
+                        new_dfa_state = State(new_s_name, es_final)
+                        dfa_states.add(new_dfa_state)
+                        processed_states[new_s_name] = new_dfa_state
+                        queue.append(new_s_with_clausura)
+                    else:
+                        new_dfa_state = processed_states[new_s_name]
 
-        #--------------------------------------------------
+                # Añadir la transición
+                if not dfa_transitions.state_has_any_transition_with_symbol(dfa_state, symbol):
+                    dfa_transitions.add_transition(dfa_state, symbol, new_dfa_state)
+
+        # Asegurarse de que empty tiene transiciones a sí mismo
+        for symbol in dfa_symbols:
+            if not dfa_transitions.state_has_any_transition_with_symbol(empty, symbol):
+                dfa_transitions.add_transition(empty, symbol, empty)
+                
+        
+
+        dfa_states.add(empty)
+
         return FiniteAutomaton(dfa_initial_state, dfa_states, dfa_symbols, dfa_transitions)
 
     # END Funciones relacionadas con generar el AFD

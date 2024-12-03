@@ -137,7 +137,7 @@ class REParser():
         self.state_counter += 1
         og_initial_state = automaton.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state = automaton.get_final_state() # Se obtiene el estado final del automata original
-        og_transitions = automaton.get_all_transitions() # Se obtienen todas las transiciones del automata original
+        og_transitions = automaton.get_object_transitions() # Se obtienen todas las transiciones del automata original
         og_symbols = automaton.get_all_symbols() # Se obtienen el conjunto de todos los simbolos del automata original
         og_states = automaton.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
@@ -183,13 +183,13 @@ class REParser():
 
         og_initial_state_1 = automaton1.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state_1 = automaton1.get_final_state() # Se obtiene el estado final del automata original
-        og_transitions_1 = automaton1.get_all_transitions() # Se obtienen todas las transiciones del automata original
+        og_transitions_1 = automaton1.get_object_transitions() # Se obtienen todas las transiciones del automata original
         og_symbols_1 = automaton1.get_all_symbols() # Se obtienen el conjunto de todos los simbolos del automata original
         og_states_1 = automaton1.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
         og_initial_state_2 = automaton2.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state_2 = automaton2.get_final_state() # Se obtiene el estado final del automata original
-        og_transitions_2 = automaton2.get_all_transitions() # Se obtienen todas las transiciones del automata original
+        og_transitions_2 = automaton2.get_object_transitions() # Se obtienen todas las transiciones del automata original
         og_symbols_2 = automaton2.get_all_symbols() # Se obtienen el conjunto de todos los simbolos del automata original
         og_states_2 = automaton2.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
@@ -244,12 +244,12 @@ class REParser():
         #---------------------------------------------------------------------
         og_initial_state_1 = automaton1.get_initial_state() #Se obtiene el estado inicial del automata original
         og_final_state_1 = automaton1.get_final_state() # Se obtiene el estado final del automata original
-        og_transitions_1 = automaton1.get_all_transitions() # Se obtienen todas las transiciones del automata original
+        og_transitions_1 = automaton1.get_object_transitions() # Se obtienen todas las transiciones del automata original
         og_symbols_1 = automaton1.get_all_symbols() # Se obtienen el conjunto de todos los simbolos del automata original
         og_states_1 = automaton1.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
         og_initial_state_2 = automaton2.get_initial_state() #Se obtiene el estado inicial del automata original
-        og_transitions_2 = automaton2.get_all_transitions() # Se obtienen todas las transiciones del automata original
+        og_transitions_2 = automaton2.get_object_transitions() # Se obtienen todas las transiciones del automata original
         og_symbols_2 = automaton2.get_all_symbols() # Se obtienen el conjunto de todos los simbolos del automata original
         og_states_2 = automaton2.get_all_states() # Se obtienen el conjunto de todos los estados del automata original
 
