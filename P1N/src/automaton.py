@@ -68,7 +68,23 @@ class FiniteAutomaton():
         return self.transitions.goes_to(state, symbol)
         
     def get_all_transitions(self):
-        return self.transitions.get_all_transitions()
+        return self.transitions
+    
+    def get_initial_state(self):
+        return self.initial_state
+    
+    def get_final_state(self):
+        for state in self.states:
+            if state.is_final_state():
+                return state
+    
+    def get_all_states(self):
+        return self.states
+    
+    def get_all_symbols(self):
+        return self.symbols
+        
+
 
     # END Funciones relacionadas con las transiciones
 
@@ -95,9 +111,6 @@ class FiniteAutomaton():
 
             Returns: No return
         """
-        #------------------------------------------------
-        # TO-DO por el estudiante
-        #-------------------------------------------------
         new_states = set()
             
         # Iterar sobre los estados actuales
@@ -115,19 +128,16 @@ class FiniteAutomaton():
 
     def accepts(self, string: str):
         """
-            Esta función procesa una cadena y comprueba si debe ser aceptada
-              o no.
+        Esta función procesa una cadena y comprueba si debe ser aceptada
+        o no.
 
-            Args:
-                string: cadena a procesar
+        Args:
+            string: cadena a procesar
 
-            Returns:
-                True si la cadena debe ser aceptada
-                False otherwise
+        Returns:
+            True si la cadena debe ser aceptada
+            False en caso contrario
         """
-        #--------------------------------------------------
-        # TO-DO por el estudiante
-        #--------------------------------------------------
         self.reset()
         for symbol in string:
             self.process_symbol(symbol)
@@ -136,10 +146,12 @@ class FiniteAutomaton():
                 print("Cadena no válida: " + string)
                 return False
         
+        # Verificar si alguno de los estados actuales es un estado final
         for state in self.current_states:
             if state.is_final:
                 return True
         return False
+
 
     def _complete_lambdas(self, raw_current_states: set):
         """
@@ -158,9 +170,6 @@ class FiniteAutomaton():
                 - Recomendable utilizar el método get_lambda_transitions de Transitions
                 
         """
-        #----------------------------------------------
-        # TODO por el estudiante
-        #----------------------------------------------
         transciones = self.transitions.get_lambda_transitions()
         
         new_states = set(raw_current_states)
@@ -176,7 +185,7 @@ class FiniteAutomaton():
                     queue.append(next_state)
         
         return new_states
-    
+
     # END Funciones relacionadas con el procesamiento de una cadena
 
 
