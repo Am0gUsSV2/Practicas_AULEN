@@ -16,7 +16,7 @@ t_ignore = ' \t\n'
 # Manejo de errores de caracteres no reconocidos
 def t_error(t):
     print(f"Caracter ilegal: {t.value[0]}")
-    t.lexer.skip(1)
+    raise Exception("Caracter ilegal")
 
 # Construir el lexer
 lexer = lex.lex()
