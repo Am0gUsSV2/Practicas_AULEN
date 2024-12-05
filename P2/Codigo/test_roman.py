@@ -4,15 +4,17 @@ from src.roman_parser import *
 
 class TestRommanGrammar(unittest.TestCase):
     def _check_analyze(self, input_string, int_value, valid):
-        def _check_analyze(self, input_string, int_value, valid):
+        try:
             result = parser.parse(input_string)
-            if not result["valid"]:
-                assert (not valid)
+            if not valid:
+                assert(result["valid"] == valid)
             else:
-                assert (result["val"] == int_value)
+                assert(result["valid"] == valid and result["val"] == int_value)
+        except:
+            assert(not valid)
 
     def test_cases_1(self):
-        self._check_analyze("XX", 20, False)
+        self._check_analyze("XX", 20, True)
 
     def test_cases_2(self):
         self._check_analyze("IX", 9, True)
