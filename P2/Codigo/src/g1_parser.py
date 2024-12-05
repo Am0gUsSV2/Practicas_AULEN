@@ -5,17 +5,33 @@ from src.g1_lexer import tokens
 
 
 def p_Language(p):
-    pass
+    'Language : A B C'
+    n = p[1]['a']
+    m = p[2]['b']
+    k = p[3]['c']
+    if n == m and k >= n+1:
+        p[0] = True
+    else:
+        p[0] = False
+
+
 
 def p_A(p):
     """A : a A
         | lambda"""
+    if len(p) == 3:
+        p[0] = {"a": 1 + p[2]["a"]}
+    else:
+        p[0] = {"a": 0}
 
     pass
 def p_B(p):
     """B : b B
         | lambda"""
-    pass
+    if len(p) == 3:
+        p[0] = {"b": 1 + p[2]["b"]}
+    else:
+        p[0] = {"b": 0}
 
 def p_C(p):
     """C : c C
