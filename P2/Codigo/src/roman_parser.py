@@ -5,30 +5,35 @@ from src.roman_lexer import tokens
 
 def p_romanNumber(p):
     'romanNumber : thousand hundred ten digit'
-    p[0] = p[1] + p[2] + p[3] + p[4]
+    p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"] + p[4]["val"]}
+    # p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"] + p[4]["val"], "valid" : p[1]["valid"] and p[2]["valid"] and p[3]["valid"] and p[4]["valid"]}
 
 def p_thousand(p):
     '''thousand : M thousand
                 | lambda'''
     if len(p) == 3:
-        p[0] = 1000 + p[2]
+        p[0] = {"val": 1000 + p[2]["val"]}
+        # p[0]["valid"] = True and p[2]["valid"]
+
     else:
-        p[0] = 0
+        p[0]["val"] = {"val": 0}
 
 def p_hundred(p):
     '''hundred : small_hundred
                | C D
                | C M
                | D small_hundred'''
+
     if len(p) == 2:
-        if p[1] == 'C D':
+            p[0]["val"] = p[1]["val"]
+
+    elif len(p) == 3:
+        if p[1] == 'C' and p[2] == 'D':
             p[0] = 400
-        elif p[1] == 'C M':
+        elif p[1] == 'C' and p[2] == 'M':
             p[0] = 900
         else:
-            p[0] = p[1]
-    elif len(p) == 3:
-        p[0] = 500 + p[2]
+            p[0] = 500 + p[2]
 
 def p_small_hundred(p):
     '''small_hundred : C small_hundred
@@ -44,14 +49,14 @@ def p_ten(p):
             | X C
             | L small_ten'''
     if len(p) == 2:
-        if p[1] == 'X L':
+        p[0] = p[1]
+    elif len(p) == 3:
+        if p[1] == 'X' and p[2] == 'L':
             p[0] = 40
-        elif p[1] == 'X C':
+        elif p[1] == 'X' and p[2] == 'C':
             p[0] = 90
         else:
-            p[0] = 0
-    elif len(p) == 3:
-        p[0] = 50 + p[2]
+            p[0] = 50 + p[2]
 
 def p_small_ten(p):
     '''small_ten : X small_ten
@@ -67,14 +72,14 @@ def p_digit(p):
               | I X
               | V small_digit'''
     if len(p) == 2:
-        if p[1] == 'I V':
+        p[0] = p[1]
+    elif len(p) == 3:
+        if p[1] == 'I' and p[2] == 'V':
             p[0] = 4
-        elif p[1] == 'I X':
+        elif p[1] == 'I' and p[2] == 'X':
             p[0] = 9
         else:
-            p[0] = 0
-    elif len(p) == 3:
-        p[0] = 5 + p[2]
+            p[0] = 5 + p[2]
 
 def p_small_digit(p):
     '''small_digit : I small_digit
