@@ -15,7 +15,6 @@ def p_Language(p):
         p[0] = False
 
 
-
 def p_A(p):
     """A : a A
         | lambda"""
@@ -24,7 +23,7 @@ def p_A(p):
     else:
         p[0] = {"a": 0}
 
-    pass
+
 def p_B(p):
     """B : b B
         | lambda"""
@@ -32,6 +31,7 @@ def p_B(p):
         p[0] = {"b": 1 + p[2]["b"]}
     else:
         p[0] = {"b": 0}
+
 
 def p_C(p):
     """C : c C
@@ -41,13 +41,16 @@ def p_C(p):
     else:
         p[0] = {"c": 0}
 
+
 def p_lambda(p):
     """lambda :"""
     pass  # Producción vacía
 
+
 # Manejo de errores sintácticos
 def p_error(p):
     print("Error de sintaxis en '%s'" % p.value if p else "EOF")
+
 
 # Construir el parser
 parser = yacc.yacc()
