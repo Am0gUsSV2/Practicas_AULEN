@@ -16,7 +16,7 @@ def p_thousand(p):
         # p[0]["valid"] = True and p[2]["valid"]
 
     else:
-        p[0]["val"] = {"val": 0}
+        p[0] = {"val": 0}
 
 def p_hundred(p):
     '''hundred : small_hundred
@@ -25,23 +25,23 @@ def p_hundred(p):
                | D small_hundred'''
 
     if len(p) == 2:
-            p[0]["val"] = p[1]["val"]
+            p[0] = {"val": p[1]["val"]}
 
     elif len(p) == 3:
         if p[1] == 'C' and p[2] == 'D':
-            p[0] = 400
+            p[0] = {"val": 400}
         elif p[1] == 'C' and p[2] == 'M':
-            p[0] = 900
+            p[0] = {"val": 900}
         else:
-            p[0] = 500 + p[2]
+            p[0] = {"val": 500 + p[2]["val"]}
 
 def p_small_hundred(p):
     '''small_hundred : C small_hundred
                      | lambda'''
     if len(p) == 3:
-        p[0] = 100 + p[2]
+        p[0] =  {"val": 100 + p[2]["val"]}
     else:
-        p[0] = 0
+        p[0] = {"val": 0}
 
 def p_ten(p):
     '''ten : small_ten
@@ -49,22 +49,22 @@ def p_ten(p):
             | X C
             | L small_ten'''
     if len(p) == 2:
-        p[0] = p[1]
+        p[0] =  {"val": p[1]["val"]}
     elif len(p) == 3:
         if p[1] == 'X' and p[2] == 'L':
-            p[0] = 40
+            p[0] = {"val": 40}
         elif p[1] == 'X' and p[2] == 'C':
-            p[0] = 90
+            p[0] = {"val": 90}
         else:
-            p[0] = 50 + p[2]
+            p[0] = {"val": 50 + p[2]["val"]}
 
 def p_small_ten(p):
     '''small_ten : X small_ten
                  | lambda'''
     if len(p) == 3:
-        p[0] = 10 + p[2]
+        p[0] =  {"val": 10 + p[2]["val"]}
     else:
-        p[0] = 0
+        p[0] = {"val": 0}
 
 def p_digit(p):
     '''digit : small_digit
@@ -72,26 +72,26 @@ def p_digit(p):
               | I X
               | V small_digit'''
     if len(p) == 2:
-        p[0] = p[1]
+        p[0] = {"val": p[1]["val"]}
     elif len(p) == 3:
         if p[1] == 'I' and p[2] == 'V':
-            p[0] = 4
+            p[0] = {"val": 4}
         elif p[1] == 'I' and p[2] == 'X':
-            p[0] = 9
+            p[0] = {"val": 9}
         else:
-            p[0] = 5 + p[2]
+            p[0] =  {"val": 5 + p[2]["val"]}
 
 def p_small_digit(p):
     '''small_digit : I small_digit
                    | lambda'''
     if len(p) == 3:
-        p[0] = 1 + p[2]
+        p[0] =  {"val": 1 + p[2]["val"]}
     else:
-        p[0] = 0
+        p[0] = {"val": 0}
 
 def p_empty(p):
     'lambda :'
-    p[0] = 0
+    p[0] = {"val": 0}
 
 # Manejo de errores sintácticos
 def p_error(p):
@@ -109,4 +109,4 @@ if __name__ == "__main__":
         if not s:
             continue
         result = parser.parse(s)
-        print(f"El valor numérico es: {result}")
+        print(f"El valor numérico es: {result["val"]}")

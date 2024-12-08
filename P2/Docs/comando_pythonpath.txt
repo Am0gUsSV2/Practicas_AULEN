@@ -1,0 +1,1 @@
+export PYTHONPATH="/home/tugfa123/Practicas/Practicas_AULEN/P2/Codigo:$PYTHONPATH"
