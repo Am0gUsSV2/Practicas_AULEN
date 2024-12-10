@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from typing import AbstractSet, Collection, MutableSet, Optional, Dict, List, Optional
+from pprint import pprint
 
 class RepeatedCellError(Exception):
     """Exception for repeated cells in LL(1) tables."""
@@ -9,8 +10,7 @@ class RepeatedCellError(Exception):
 
 class SyntaxError(Exception):
     """Exception for parsing errors."""
-    def __init__(self, mensaje):
-        super().__init__(mensaje)
+    pass
 
 class Grammar:
     """
@@ -67,8 +67,8 @@ class Grammar:
         self.non_terminals = non_terminals
         self.productions = productions
         self.axiom = axiom
-        self.first_sets = {symbol: set() for symbol in terminals | non_terminals}
-        self.follow_sets = {symbol: set() for symbol in terminals | non_terminals}
+        self.first_sets = {symbol: set() for symbol in non_terminals}
+        self.follow_sets = {symbol: set() for symbol in non_terminals}
 
     def __repr__(self) -> str:
         return (
@@ -109,8 +109,10 @@ class Grammar:
                             work_stack.append(production)
                     temp_first.update(self.first_sets[symbol] - {""})
 
-                    if "" not in self.first_sets[symbol]:
-                        break  # No hay epsilon, se detiene aquí
+                    if "" in self.first_sets[symbol]:
+                        continue  # No hay epsilon, se detiene aquí
+                    else:
+                        break
                 else:
                     raise ValueError(f"Símbolo no válido en la sentence: {symbol}")
             else:
@@ -141,43 +143,51 @@ class Grammar:
         """
         if symbol not in self.non_terminals:
             raise ValueError(f"Symbol '{symbol}' must be a non-terminal.")
-        
-        self.follow_sets[self.axiom].add("$")  
+
+        # Inicializar los conjuntos Follow de todos los no terminales
+        for non_terminal in self.non_terminals:
+            if non_terminal not in self.follow_sets:
+                self.follow_sets[non_terminal] = set()
+
+        # Regla 1: Follow del axioma incluye "$"
+        self.follow_sets[self.axiom].add("$")
 
         changed = True
         while changed:
             changed = False
 
-            # Recorrer las producciones de la gramática
+            # Iterar sobre cada producción
             for head, productions in self.productions.items():
                 for production in productions:
-                    follow_to_propagate = self.follow_sets[head]  # Follow(A) para regla (3)
+                    # Propagar Follow(head)
+                    follow_to_propagate = self.follow_sets[head]
 
                     for i in range(len(production)):
                         sym = production[i]
 
-                        if sym == symbol:
-                            # Si el símbolo actual es el que estamos procesando
+                        if sym in self.non_terminals:  # Sólo no terminales tienen Follow
+                            # Regla 2: Añadir First(B) - {λ} a Follow(sym)
                             if i + 1 < len(production):
-                                next_symbol = production[i + 1]
-                                first_of_next = self.compute_first(next_symbol) - {""}
+                                next_symbol = production[i + 1:]
+                                first_of_next = self.compute_first(next_symbol)
 
-                                # Regla 2: Si A -> aXB, añadir First(B) - {λ} a Follow(X)
-                                before = len(self.follow_sets[symbol])
-                                self.follow_sets[symbol].update(first_of_next)
-                                after = len(self.follow_sets[symbol])
+                                before = len(self.follow_sets[sym])
+                                self.follow_sets[sym].update(first_of_next - {""})
+                                after = len(self.follow_sets[sym])
                                 if after > before:
                                     changed = True
 
-                            # Regla 3: Si A -> aX o A -> aXB con First(B) contiene λ
-                            if i + 1 == len(production) or "" in self.compute_first(production[i + 1]):
-                                before = len(self.follow_sets[symbol])
-                                self.follow_sets[symbol].update(follow_to_propagate)
-                                after = len(self.follow_sets[symbol])
+                            # Regla 3: Propagar Follow(head) si es el último símbolo
+                            # o si First(B) contiene λ
+                            if i + 1 == len(production) or "" in self.compute_first(production[i + 1:]):
+                                before = len(self.follow_sets[sym])
+                                self.follow_sets[sym].update(follow_to_propagate)
+                                after = len(self.follow_sets[sym])
                                 if after > before:
                                     changed = True
 
         return self.follow_sets[symbol]
+
 
 
 	# TO-DO: Complete this method for exercise 3...
@@ -201,7 +211,6 @@ class Grammar:
                 for terminal in first_set - {""}:
                     if terminal != "":  # Terminal válido
                         if table.cells[non_terminal][terminal] is None:
-                            print(production + "(first) ->" + str(first_set))
                             table.add_cell(non_terminal, terminal, production)
                         else:
                             # Conflicto: la gramática no es LL(1)
@@ -217,7 +226,14 @@ class Grammar:
                             # Conflicto: la gramática no es LL(1)
                             return None
         
+
         return table
+
+	# TO-DO: Complete this method for exercise 4...
+
+    def is_ll1(self) -> bool:
+        return self.get_ll1_table() is not None
+
 
 class LL1Table:
     """
@@ -329,7 +345,7 @@ class LL1Table:
         while stack and i <len_string:
             element = stack.pop()
             if element.root in self.non_terminals:
-                next = self.cells[element.root][input_string[i]]
+                next = self.cells.get(element.root, {}).get(input_string[i], None)
                 if next is not None:
                     cld = []
                     if next != '': #El simbolo de la tabla es distinto de la cadena vacia
