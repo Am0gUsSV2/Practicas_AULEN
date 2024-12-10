@@ -2,21 +2,17 @@ import ply.yacc as yacc
 from src.roman_lexer import tokens
 
 # Gramática
+synt_error = False
 
 def p_romanNumber(p):
-    'romanNumber : thousand hundred ten digit'
-    p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"] + p[4]["val"]}
-    # p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"] + p[4]["val"], "valid" : p[1]["valid"] and p[2]["valid"] and p[3]["valid"] and p[4]["valid"]}
-
-def p_thousand(p):
-    '''thousand : M thousand
-                | lambda'''
-    if len(p) == 3:
-        p[0] = {"val": 1000 + p[2]["val"]}
-        # p[0]["valid"] = True and p[2]["valid"]
-
-    else:
-        p[0] = {"val": 0}
+    'romanNumber : hundred ten digit'
+    # p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"]}
+    global synt_error
+    p[0] = {"val":p[1]["val"] + p[2]["val"] + p[3]["val"], "valid" : True}
+    if synt_error:
+        p[0] = {"val":-1, "valid" : False}
+        synt_error = False
+    
 
 def p_hundred(p):
     '''hundred : small_hundred
@@ -35,13 +31,17 @@ def p_hundred(p):
         else:
             p[0] = {"val": 500 + p[2]["val"]}
 
-def p_small_hundred(p):
+def p_small_hundred(p): #aniadir no mas de 3
     '''small_hundred : C small_hundred
                      | lambda'''
+    global synt_error
     if len(p) == 3:
         p[0] =  {"val": 100 + p[2]["val"]}
+        if p[0]["val"] > 300:
+            synt_error = True
+
     else:
-        p[0] = {"val": 0}
+        p[0] = {"val": 0, }
 
 def p_ten(p):
     '''ten : small_ten
@@ -58,11 +58,14 @@ def p_ten(p):
         else:
             p[0] = {"val": 50 + p[2]["val"]}
 
-def p_small_ten(p):
+def p_small_ten(p): #aniadir no mas de 3
     '''small_ten : X small_ten
                  | lambda'''
+    global synt_error
     if len(p) == 3:
         p[0] =  {"val": 10 + p[2]["val"]}
+        if p[0]["val"] > 30:
+            synt_error = True
     else:
         p[0] = {"val": 0}
 
@@ -81,11 +84,14 @@ def p_digit(p):
         else:
             p[0] =  {"val": 5 + p[2]["val"]}
 
-def p_small_digit(p):
+def p_small_digit(p): #aniadir no mas de 3
     '''small_digit : I small_digit
                    | lambda'''
+    global synt_error
     if len(p) == 3:
         p[0] =  {"val": 1 + p[2]["val"]}
+        if p[0]["val"] > 3:
+            synt_error = True
     else:
         p[0] = {"val": 0}
 

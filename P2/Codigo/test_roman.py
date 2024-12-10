@@ -25,6 +25,25 @@ class TestRommanGrammar(unittest.TestCase):
     def test_cases_4(self):
         self._check_analyze("XIIII", 13, False)
 
+#TEST ADICIONALES
+
+    def test_cases_5(self):
+        self._check_analyze("CIC", 199, False)
+
+    def test_cases_6(self):
+        self._check_analyze("IIII", 4, False)
+
+    def test_cases_7(self):
+        self._check_analyze("CCCC", 400, False)
+
+    def test_cases_8(self):
+        self._check_analyze("CCC", 300, True)
+
+    def test_cases_9(self):
+        self._check_analyze("XVX", 15, False)    
+
+    def test_cases_10(self):
+        self._check_analyze("XXVX", 25, False)  
 
 if __name__ == '__main__':
     unittest.main()
