@@ -69,6 +69,7 @@ class Grammar:
         self.axiom = axiom
         self.first_sets = {symbol: set() for symbol in non_terminals}
         self.follow_sets = {symbol: set() for symbol in non_terminals}
+        self.first_sets_calculated = False
 
     def __repr__(self) -> str:
         return (
@@ -78,55 +79,93 @@ class Grammar:
             f"axiom={self.axiom!r}, "
             f"productions={self.productions!r})"
         )
-        
 
-    def compute_first(self, sentence: str) -> AbstractSet[str]:
+    def compute_all_first_sets(self):
         """
-        Calcula el conjunto First.
+        Calcula todos los conjuntos First para los no terminales de la gramática de manera iterativa.
+
+        Este método asegura que cada conjunto First se actualiza adecuadamente hasta que no haya más cambios.
+        """
+        changes = True
+
+        while changes:
+            changes = False
+            for non_terminal in self.non_terminals:
+                current_first_set = self.first_sets[non_terminal].copy()
+
+                # Iteramos sobre las producciones del no terminal
+                for production in self.productions[non_terminal]:
+                    empty_production = True  # Se asume inicialmente que la producción puede derivar en ""
+
+                    for symbol in production:
+                        if symbol in self.terminals:
+                            # Si el símbolo es terminal, lo añadimos al conjunto First
+                            self.first_sets[non_terminal].add(symbol)
+                            empty_production = False  # La producción no puede ser vacía
+                            break  # Dejamos de procesar esta producción
+                        elif symbol in self.non_terminals:
+                            # Si el símbolo es un no terminal, actualizamos el conjunto First
+                            self.first_sets[non_terminal].update(self.first_sets[symbol] - {""})
+                            # Si el no terminal puede derivar en "", seguimos evaluando el siguiente símbolo
+                            if "" not in self.first_sets[symbol]:
+                                empty_production = False
+                                break
+                        else:
+                            raise ValueError(f"Símbolo no válido en producción: {symbol}")
+
+                    # Si la producción tiene solo no terminales que pueden derivar en "", añadimos ""
+                    if empty_production:
+                        self.first_sets[non_terminal].add("")
+
+                # Si hubo un cambio en el conjunto First del no terminal, repetimos el proceso
+                if self.first_sets[non_terminal] != current_first_set:
+                    changes = True
+
+        # Marcamos como calculados los conjuntos First
+        self.first_sets_calculated = True
+
+    def compute_first(self, sentence: str) -> set[str]:
+        """
+        Método para calcular el conjunto First de una cadena específica.
 
         Args:
-            sentence: Secuencia de símbolos para la que se calculará el conjunto First.
+            sentence: Cadena cuya conjunto First se va a calcular.
 
         Returns:
-            Conjunto First de la secuencia.
+            Conjunto First de la cadena.
         """
-        work_stack = [sentence]  # Pila para procesar las sentences
-        computed_first = set()   # Conjunto First calculado para la sentence actual
-        
-        while work_stack:
-            current_sentence = work_stack.pop()
-            temp_first = set()
+        # Calculamos todos los conjuntos First si no están calculados
+        if not self.first_sets_calculated:
+            self.compute_all_first_sets()
 
-            for symbol in current_sentence:
-                if symbol in self.terminals:
-                    temp_first.add(symbol)
-                    break  # Un terminal define el First y se detiene aquí
-                elif symbol in self.non_terminals:
-                    # Calculamos si el First del no terminal aún no está calculado
-                    if not self.first_sets[symbol]:
-                        # Agregamos todas sus producciones al stack para calcularlas iterativamente
-                        for production in self.productions[symbol]:
-                            work_stack.append(production)
-                    temp_first.update(self.first_sets[symbol] - {""})
+        first_set = set()
 
-                    if "" in self.first_sets[symbol]:
-                        continue  # No hay epsilon, se detiene aquí
-                    else:
-                        break
-                else:
-                    raise ValueError(f"Símbolo no válido en la sentence: {symbol}")
+        # Procesamos la cadena símbolo por símbolo
+        for symbol in sentence:
+            if symbol in self.terminals:
+                # Si el símbolo es terminal, lo añadimos al conjunto First
+                first_set.add(symbol)
+                break  # Una vez que añadimos el terminal, no necesitamos más símbolos
+            elif symbol in self.non_terminals:
+                # Si el símbolo es un no terminal, actualizamos el conjunto First con los de ese no terminal
+                first_set.update(self.first_sets[symbol] - {""})
+
+                # Si el conjunto First de este no terminal no contiene "", dejamos de procesar
+                if "" not in self.first_sets[symbol]:
+                    break
             else:
-                # Si llegamos aquí, significa que todos los símbolos tienen ε en su First
-                temp_first.add("")
+                raise ValueError(f"Símbolo no válido en producción: {symbol}")
 
-            # Guardamos el conjunto temporal calculado
-            computed_first.update(temp_first)
-            
-            # Actualizamos el First almacenado para la sentence si cambia
-            if sentence not in self.first_sets or self.first_sets[sentence] != computed_first:
-                self.first_sets[sentence] = computed_first
+        # Si llegamos al final de la cadena y no hemos encontrado ningún terminal ni no terminal
+        # que termine el conjunto (es decir, toda la cadena puede derivar en lambda),
+        # añadimos el conjunto lambda al conjunto First.
+        if all(symbol in self.non_terminals and "" in self.first_sets[symbol] for symbol in sentence):
+            first_set.add("")
 
-        return computed_first
+        return first_set
+
+
+
 
 	# TODO: Complete this method for exercise 2...
 
