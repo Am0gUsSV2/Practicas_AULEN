@@ -72,9 +72,9 @@ class TestFirst(unittest.TestCase):
         """
 
         grammar = GrammarFormat.read(grammar_str)
+        self._check_first(grammar, "S", {'a', 'b', 'c'})
         self._check_first(grammar, "A", {'a', ''})
         self._check_first(grammar, "B", {'b', 'c'})
-        self._check_first(grammar, "S", {'a', 'b', 'c'})
         self._check_first(grammar, "AB", {'a', 'b', 'c'})
         self._check_first(grammar, "aB", {'a'})
         self._check_first(grammar, "Ab", {'a', 'b'})
@@ -94,6 +94,23 @@ class TestFirst(unittest.TestCase):
         self._check_first(grammar, "bA", {'b'})
         self._check_first(grammar, "cA", {'c'})
         self._check_first(grammar, "d", {'d'})
+    
+    def test_case5(self) -> None:
+        grammar_str = """
+        S -> Aa
+        S -> b
+        A -> Ac
+        A -> d
+        """
+
+        grammar = GrammarFormat.read(grammar_str)
+        self._check_first(grammar, "S", {'d', 'b'})
+        self._check_first(grammar, "A", {'d'})
+        self._check_first(grammar, "Aa", {'d'})
+        self._check_first(grammar, "b", {'b'})
+        self._check_first(grammar, "Ac", {'d'})
+        self._check_first(grammar, "d", {'d'})
+
 
 
 
