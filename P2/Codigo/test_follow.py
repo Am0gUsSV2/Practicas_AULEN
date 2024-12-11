@@ -34,6 +34,58 @@ class TestFollow(unittest.TestCase):
         self._check_follow(grammar, "X", {'$', ')'})
         self._check_follow(grammar, "Y", {'$', ')', '+'})
 
+    # def test_case2(self) -> None:
+
+    #     """Test Case 2: Follow sets for a different grammar."""
+    #     grammar_str = """
+    #     S -> AB
+    #     A -> aA
+    #     A ->
+    #     B -> bB
+    #     B -> c
+    #     """
+        
+    #     grammar = GrammarFormat.read(grammar_str)
+        
+    #     # Follow de S es {'$', 'b', 'c'}, ya que es el axioma y el Follow de S debe contener '$'.
+    #     self._check_follow(grammar, "S", {'$', 'b', 'c'})
+        
+    #     # Follow de A es {'b', 'c'}, porque A está seguido por B en la producción S -> AB.
+    #     self._check_follow(grammar, "A", {'b', 'c'})
+        
+    #     # Follow de B es {'$', 'c'}, ya que B está al final de la producción S -> AB, y Follow(S) incluye '$'.
+    #     self._check_follow(grammar, "B", {'$', 'c'})
+    
+    # def test_case_3(self) -> None:
+    #     """Test Case with Recursions."""
+    #     grammar_str = """
+    #     S -> aS
+    #     S -> bA
+    #     A -> cA
+    #     A -> d
+    #     """
+
+    #     grammar = GrammarFormat.read(grammar_str)
+    #     self._check_follow(grammar, "S", {'$', 'c', 'd'})  # Follow(S) incluye '$' porque S es el axioma, y 'c' o 'd' pueden venir de A.
+    #     self._check_follow(grammar, "A", {'$', 'c', 'd'})  # Follow(A) incluye Follow(S) porque A aparece en S -> bA.
+
+    def test_case_4(self) -> None:
+        grammar_str = """
+        S -> AB
+        A -> aA
+        A ->
+        B -> bB
+        B ->
+        """
+        
+        grammar = GrammarFormat.read(grammar_str)
+        self._check_follow(grammar, "S", {'$'})
+        self._check_follow(grammar, "A", {'b', '$'})
+        self._check_follow(grammar, "B", {'$'})
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
