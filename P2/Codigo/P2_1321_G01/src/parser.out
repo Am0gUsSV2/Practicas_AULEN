@@ -1,0 +1,436 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> romanNumber
+Rule 1     romanNumber -> hundred ten digit
+Rule 2     hundred -> small_hundred
+Rule 3     hundred -> C D
+Rule 4     hundred -> C M
+Rule 5     hundred -> D small_hundred
+Rule 6     small_hundred -> C small_hundred
+Rule 7     small_hundred -> lambda
+Rule 8     ten -> small_ten
+Rule 9     ten -> X L
+Rule 10    ten -> X C
+Rule 11    ten -> L small_ten
+Rule 12    small_ten -> X small_ten
+Rule 13    small_ten -> lambda
+Rule 14    digit -> small_digit
+Rule 15    digit -> I V
+Rule 16    digit -> I X
+Rule 17    digit -> V small_digit
+Rule 18    small_digit -> I small_digit
+Rule 19    small_digit -> lambda
+Rule 20    lambda -> <empty>
+
+Terminals, with rules where they appear
+
+C                    : 3 4 6 10
+D                    : 3 5
+I                    : 15 16 18
+L                    : 9 11
+M                    : 4
+V                    : 15 17
+X                    : 9 10 12 16
+error                : 
+
+Nonterminals, with rules where they appear
+
+digit                : 1
+hundred              : 1
+lambda               : 7 13 19
+romanNumber          : 0
+small_digit          : 14 17 18
+small_hundred        : 2 5 6
+small_ten            : 8 11 12
+ten                  : 1
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . romanNumber
+    (1) romanNumber -> . hundred ten digit
+    (2) hundred -> . small_hundred
+    (3) hundred -> . C D
+    (4) hundred -> . C M
+    (5) hundred -> . D small_hundred
+    (6) small_hundred -> . C small_hundred
+    (7) small_hundred -> . lambda
+    (20) lambda -> .
+
+    C               shift and go to state 4
+    D               shift and go to state 5
+    X               reduce using rule 20 (lambda -> .)
+    L               reduce using rule 20 (lambda -> .)
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    romanNumber                    shift and go to state 1
+    hundred                        shift and go to state 2
+    small_hundred                  shift and go to state 3
+    lambda                         shift and go to state 6
+
+state 1
+
+    (0) S' -> romanNumber .
+
+
+
+state 2
+
+    (1) romanNumber -> hundred . ten digit
+    (8) ten -> . small_ten
+    (9) ten -> . X L
+    (10) ten -> . X C
+    (11) ten -> . L small_ten
+    (12) small_ten -> . X small_ten
+    (13) small_ten -> . lambda
+    (20) lambda -> .
+
+    X               shift and go to state 9
+    L               shift and go to state 10
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    ten                            shift and go to state 7
+    small_ten                      shift and go to state 8
+    lambda                         shift and go to state 11
+
+state 3
+
+    (2) hundred -> small_hundred .
+
+    X               reduce using rule 2 (hundred -> small_hundred .)
+    L               reduce using rule 2 (hundred -> small_hundred .)
+    I               reduce using rule 2 (hundred -> small_hundred .)
+    V               reduce using rule 2 (hundred -> small_hundred .)
+    $end            reduce using rule 2 (hundred -> small_hundred .)
+
+
+state 4
+
+    (3) hundred -> C . D
+    (4) hundred -> C . M
+    (6) small_hundred -> C . small_hundred
+    (6) small_hundred -> . C small_hundred
+    (7) small_hundred -> . lambda
+    (20) lambda -> .
+
+    D               shift and go to state 13
+    M               shift and go to state 14
+    C               shift and go to state 12
+    X               reduce using rule 20 (lambda -> .)
+    L               reduce using rule 20 (lambda -> .)
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_hundred                  shift and go to state 15
+    lambda                         shift and go to state 6
+
+state 5
+
+    (5) hundred -> D . small_hundred
+    (6) small_hundred -> . C small_hundred
+    (7) small_hundred -> . lambda
+    (20) lambda -> .
+
+    C               shift and go to state 12
+    X               reduce using rule 20 (lambda -> .)
+    L               reduce using rule 20 (lambda -> .)
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_hundred                  shift and go to state 16
+    lambda                         shift and go to state 6
+
+state 6
+
+    (7) small_hundred -> lambda .
+
+    X               reduce using rule 7 (small_hundred -> lambda .)
+    L               reduce using rule 7 (small_hundred -> lambda .)
+    I               reduce using rule 7 (small_hundred -> lambda .)
+    V               reduce using rule 7 (small_hundred -> lambda .)
+    $end            reduce using rule 7 (small_hundred -> lambda .)
+
+
+state 7
+
+    (1) romanNumber -> hundred ten . digit
+    (14) digit -> . small_digit
+    (15) digit -> . I V
+    (16) digit -> . I X
+    (17) digit -> . V small_digit
+    (18) small_digit -> . I small_digit
+    (19) small_digit -> . lambda
+    (20) lambda -> .
+
+    I               shift and go to state 19
+    V               shift and go to state 20
+    $end            reduce using rule 20 (lambda -> .)
+
+    digit                          shift and go to state 17
+    small_digit                    shift and go to state 18
+    lambda                         shift and go to state 21
+
+state 8
+
+    (8) ten -> small_ten .
+
+    I               reduce using rule 8 (ten -> small_ten .)
+    V               reduce using rule 8 (ten -> small_ten .)
+    $end            reduce using rule 8 (ten -> small_ten .)
+
+
+state 9
+
+    (9) ten -> X . L
+    (10) ten -> X . C
+    (12) small_ten -> X . small_ten
+    (12) small_ten -> . X small_ten
+    (13) small_ten -> . lambda
+    (20) lambda -> .
+
+    L               shift and go to state 23
+    C               shift and go to state 24
+    X               shift and go to state 22
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_ten                      shift and go to state 25
+    lambda                         shift and go to state 11
+
+state 10
+
+    (11) ten -> L . small_ten
+    (12) small_ten -> . X small_ten
+    (13) small_ten -> . lambda
+    (20) lambda -> .
+
+    X               shift and go to state 22
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_ten                      shift and go to state 26
+    lambda                         shift and go to state 11
+
+state 11
+
+    (13) small_ten -> lambda .
+
+    I               reduce using rule 13 (small_ten -> lambda .)
+    V               reduce using rule 13 (small_ten -> lambda .)
+    $end            reduce using rule 13 (small_ten -> lambda .)
+
+
+state 12
+
+    (6) small_hundred -> C . small_hundred
+    (6) small_hundred -> . C small_hundred
+    (7) small_hundred -> . lambda
+    (20) lambda -> .
+
+    C               shift and go to state 12
+    X               reduce using rule 20 (lambda -> .)
+    L               reduce using rule 20 (lambda -> .)
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_hundred                  shift and go to state 15
+    lambda                         shift and go to state 6
+
+state 13
+
+    (3) hundred -> C D .
+
+    X               reduce using rule 3 (hundred -> C D .)
+    L               reduce using rule 3 (hundred -> C D .)
+    I               reduce using rule 3 (hundred -> C D .)
+    V               reduce using rule 3 (hundred -> C D .)
+    $end            reduce using rule 3 (hundred -> C D .)
+
+
+state 14
+
+    (4) hundred -> C M .
+
+    X               reduce using rule 4 (hundred -> C M .)
+    L               reduce using rule 4 (hundred -> C M .)
+    I               reduce using rule 4 (hundred -> C M .)
+    V               reduce using rule 4 (hundred -> C M .)
+    $end            reduce using rule 4 (hundred -> C M .)
+
+
+state 15
+
+    (6) small_hundred -> C small_hundred .
+
+    X               reduce using rule 6 (small_hundred -> C small_hundred .)
+    L               reduce using rule 6 (small_hundred -> C small_hundred .)
+    I               reduce using rule 6 (small_hundred -> C small_hundred .)
+    V               reduce using rule 6 (small_hundred -> C small_hundred .)
+    $end            reduce using rule 6 (small_hundred -> C small_hundred .)
+
+
+state 16
+
+    (5) hundred -> D small_hundred .
+
+    X               reduce using rule 5 (hundred -> D small_hundred .)
+    L               reduce using rule 5 (hundred -> D small_hundred .)
+    I               reduce using rule 5 (hundred -> D small_hundred .)
+    V               reduce using rule 5 (hundred -> D small_hundred .)
+    $end            reduce using rule 5 (hundred -> D small_hundred .)
+
+
+state 17
+
+    (1) romanNumber -> hundred ten digit .
+
+    $end            reduce using rule 1 (romanNumber -> hundred ten digit .)
+
+
+state 18
+
+    (14) digit -> small_digit .
+
+    $end            reduce using rule 14 (digit -> small_digit .)
+
+
+state 19
+
+    (15) digit -> I . V
+    (16) digit -> I . X
+    (18) small_digit -> I . small_digit
+    (18) small_digit -> . I small_digit
+    (19) small_digit -> . lambda
+    (20) lambda -> .
+
+    V               shift and go to state 28
+    X               shift and go to state 29
+    I               shift and go to state 27
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_digit                    shift and go to state 30
+    lambda                         shift and go to state 21
+
+state 20
+
+    (17) digit -> V . small_digit
+    (18) small_digit -> . I small_digit
+    (19) small_digit -> . lambda
+    (20) lambda -> .
+
+    I               shift and go to state 27
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_digit                    shift and go to state 31
+    lambda                         shift and go to state 21
+
+state 21
+
+    (19) small_digit -> lambda .
+
+    $end            reduce using rule 19 (small_digit -> lambda .)
+
+
+state 22
+
+    (12) small_ten -> X . small_ten
+    (12) small_ten -> . X small_ten
+    (13) small_ten -> . lambda
+    (20) lambda -> .
+
+    X               shift and go to state 22
+    I               reduce using rule 20 (lambda -> .)
+    V               reduce using rule 20 (lambda -> .)
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_ten                      shift and go to state 25
+    lambda                         shift and go to state 11
+
+state 23
+
+    (9) ten -> X L .
+
+    I               reduce using rule 9 (ten -> X L .)
+    V               reduce using rule 9 (ten -> X L .)
+    $end            reduce using rule 9 (ten -> X L .)
+
+
+state 24
+
+    (10) ten -> X C .
+
+    I               reduce using rule 10 (ten -> X C .)
+    V               reduce using rule 10 (ten -> X C .)
+    $end            reduce using rule 10 (ten -> X C .)
+
+
+state 25
+
+    (12) small_ten -> X small_ten .
+
+    I               reduce using rule 12 (small_ten -> X small_ten .)
+    V               reduce using rule 12 (small_ten -> X small_ten .)
+    $end            reduce using rule 12 (small_ten -> X small_ten .)
+
+
+state 26
+
+    (11) ten -> L small_ten .
+
+    I               reduce using rule 11 (ten -> L small_ten .)
+    V               reduce using rule 11 (ten -> L small_ten .)
+    $end            reduce using rule 11 (ten -> L small_ten .)
+
+
+state 27
+
+    (18) small_digit -> I . small_digit
+    (18) small_digit -> . I small_digit
+    (19) small_digit -> . lambda
+    (20) lambda -> .
+
+    I               shift and go to state 27
+    $end            reduce using rule 20 (lambda -> .)
+
+    small_digit                    shift and go to state 30
+    lambda                         shift and go to state 21
+
+state 28
+
+    (15) digit -> I V .
+
+    $end            reduce using rule 15 (digit -> I V .)
+
+
+state 29
+
+    (16) digit -> I X .
+
+    $end            reduce using rule 16 (digit -> I X .)
+
+
+state 30
+
+    (18) small_digit -> I small_digit .
+
+    $end            reduce using rule 18 (small_digit -> I small_digit .)
+
+
+state 31
+
+    (17) digit -> V small_digit .
+
+    $end            reduce using rule 17 (digit -> V small_digit .)
+
